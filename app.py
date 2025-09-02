@@ -124,8 +124,13 @@ if uploaded_files:
             'text-align': 'center'
         })
 
-    # Display the styled dataframe with increased height
-    st.dataframe(styled_df, height=800)  # Increased height to 800 pixels
+    # Calculate dynamic height based on number of staff groups
+    row_height = 35  # height per row in pixels
+    header_height = 35  # height for header
+    total_height = (len(selected_groups) + 1) * row_height + header_height
+
+    # Display the styled dataframe with dynamic height
+    st.dataframe(styled_df, height=total_height)
 
     # Display metrics for selected weeks
     if selected_weeks:
