@@ -126,8 +126,7 @@ if uploaded_files:
 
     # Calculate dynamic height based on number of staff groups
     row_height = 35  # height per row in pixels
-    header_height = 35  # height for header
-    total_height = (len(selected_groups) + 1) * row_height + header_height
+    total_height = len(selected_groups) * row_height  # removed header_height and extra row
 
     # Display the styled dataframe with dynamic height
     st.dataframe(styled_df, height=total_height)
