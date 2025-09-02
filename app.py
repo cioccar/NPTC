@@ -124,14 +124,16 @@ if uploaded_files:
     
     # Display metrics
     if selected_weeks:
-        latest_week = selected_weeks[0]
+        latest_week = selected_weeks[0]  # This gives us "Week_XX"
+        # Remove "Week_" prefix to match column name
+        week_number = latest_week.replace('Week_', '')
         st.metric(
             f"Average Occupancy ({latest_week})", 
-            f"{display_df[latest_week].mean():.1f}%"
+            f"{formatted_df[week_number].mean():.1f}%"
         )
         st.metric(
             "Average Unused Capacity", 
-            f"{display_df['Avg_Capacity_Delta'].mean():.1f} hours"
+            f"{formatted_df['Avg_Capacity_Delta'].mean():.1f} hours"
         )
 else:
     st.write("Please upload your data files")
