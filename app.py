@@ -26,8 +26,20 @@ df = pd.DataFrame(data)
 
 st.title('Workforce Capacity Analysis Dashboard')
 
-# Display the dataframe
-st.write(df)
+# Sidebar with filter
+st.sidebar.header('Filters')
+selected_groups = st.sidebar.multiselect(
+    'Select Staff Groups',
+    df['Staff_Group'].tolist(),
+    default=df['Staff_Group'].tolist()  # All groups selected by default
+)
 
-# Simple metrics
-st.metric("Average Occupancy", f"{df['Occupancy_Rate'].mean():.1f}%")
+# Filter the dataframe based on selection
+filtered_df = df[df['Staff_Group'].isin(selected_groups)]
+
+# Display the filtered dataframe
+st.write(filtered_df)
+
+# Metrics based on filtered data
+st.metric("Average Occupancy", f"{filtered_df['Occupancy_Rate'].mean():.1f}%")
+st.metric("Total Unused Capacity", f"{filtered_df['Capacity_Delta_Hours'].sum():.1f} hours")
