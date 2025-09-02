@@ -115,17 +115,19 @@ if uploaded_files:
 
     # Display metrics for selected weeks
     if selected_weeks:
-        # Calculate averages only for selected weeks
+        # Calculate average occupancy for selected weeks
         avg_occupancy = formatted_df[selected_weeks].mean().mean()
-        avg_capacity_delta = formatted_df['Avg_Capacity_Delta'].mean()
+        
+        # Calculate sum of capacity delta hours only for rows with occupancy < 74%
+        unused_capacity = formatted_df[formatted_df['Avg_Occupancy'] <= 74]['Avg_Capacity_Delta'].sum()
         
         st.metric(
             f"Average Occupancy (Selected Weeks)", 
             f"{avg_occupancy:.1f}%"
         )
         st.metric(
-            "Average Unused Capacity (Selected Weeks)", 
-            f"{avg_capacity_delta:.1f} hours"
+            "Total Unused Capacity (Green Rows)", 
+            f"{unused_capacity:.1f} hours"
         )
             
 else:
