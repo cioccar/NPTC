@@ -100,18 +100,32 @@ if uploaded_files:
     for col in numeric_cols:
         formatted_df[col] = pd.to_numeric(formatted_df[col], errors='coerce')
 
-    # Simplified color coding function
+    # Modified color coding function to only color specific columns
     def color_rows(row):
         avg_occupancy = row['Avg_Occupancy']
-        return ['background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90' for _ in row]
+        colors = []
+        for col in row.index:
+            if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
+                colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
+            else:
+                colors.append('')
+        return colors
 
     # Apply formatting and styling
     styled_df = formatted_df.style\
-        .format({col: '{:.1f}' for col in formatted_df.columns if col != 'Staff_Group'})\
-        .apply(color_rows, axis=1)
+        .format({
+            'Avg_Occupancy': '{:.1f}%',
+            'Avg_Capacity_Delta': '{:.1f}',
+            **{col: '{:.1f}%' for col in formatted_df.columns if col not in ['Staff_Group', 'Avg_Capacity_Delta']}
+        })\
+        .apply(color_rows, axis=1)\
+        .set_properties(**{
+            'width': '100px',
+            'text-align': 'center'
+        })
 
-    # Display the styled dataframe
-    st.dataframe(styled_df)
+    # Display the styled dataframe with increased height
+    st.dataframe(styled_df, height=800)  # Increased height to 800 pixels
 
     # Display metrics for selected weeks
     if selected_weeks:
