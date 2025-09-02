@@ -84,37 +84,43 @@ if uploaded_files:
     # Display the dataframe
     st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
     
-    # Color coding function
-    def color_rows(row):
-        # Get week columns (excluding Staff_Group, Avg_Occupancy, and Avg_Capacity_Delta)
-        week_cols = [col for col in row.index if col.startswith('Week_')]
-        
-        # Calculate average occupancy from week columns only
-        week_values = [row[col] for col in week_cols if pd.notnull(row[col])]
-        avg_occupancy = sum(week_values) / len(week_values) if week_values else 0
-        
-        # Apply colors based on average occupancy
-        return ['color: red' if (avg_occupancy > 74 and col in ['Staff_Group', 'Avg_Capacity_Delta']) 
-                else 'color: green' if (avg_occupancy <= 74 and col in ['Staff_Group', 'Avg_Capacity_Delta'])
-                else '' for col in row.index]
+   # Replace the color coding and display section with this:
 
-    # Format the display dataframe
+    # Display the dataframe
+    st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
+    
+    # Create a copy for formatting
     formatted_df = display_df.copy()
     
-    # Ensure all numeric columns are properly formatted
-    for col in formatted_df.columns:
-        if col != 'Staff_Group':
-            formatted_df[col] = pd.to_numeric(formatted_df[col], errors='coerce')
+    # Ensure numeric columns are properly formatted
+    numeric_cols = [col for col in formatted_df.columns if col != 'Staff_Group']
+    for col in numeric_cols:
+        formatted_df[col] = pd.to_numeric(formatted_df[col], errors='coerce')
 
-    # Display formatted dataframe
-    st.dataframe(
-        formatted_df.style
-        .format({
-            col: '{:.1f}%' if col not in ['Staff_Group', 'Avg_Capacity_Delta'] else '{:.1f}'
-            for col in formatted_df.columns
-        })
+    # Simplified color coding function
+    def color_rows(row):
+        avg_occupancy = row['Avg_Occupancy']
+        return ['background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90' for _ in row]
+
+    # Apply formatting and styling
+    styled_df = formatted_df.style\
+        .format({col: '{:.1f}' for col in formatted_df.columns if col != 'Staff_Group'})\
         .apply(color_rows, axis=1)
-    )
+
+    # Display the styled dataframe
+    st.dataframe(styled_df)
+
+    # Display metrics
+    if selected_weeks:
+        latest_week = selected_weeks[0]
+        st.metric(
+            f"Average Occupancy ({latest_week})", 
+            f"{formatted_df[latest_week].mean():.1f}%"
+        )
+        st.metric(
+            "Average Unused Capacity", 
+            f"{formatted_df['Avg_Capacity_Delta'].mean():.1f} hours"
+        )
     
     # Display metrics
     if selected_weeks:
