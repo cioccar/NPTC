@@ -122,18 +122,33 @@ if uploaded_files:
             f"{formatted_df['Avg_Capacity_Delta'].mean():.1f} hours"
         )
     
-    # Display metrics
+      # Display metrics
     if selected_weeks:
-        latest_week = selected_weeks[0]  # This gives us "Week_XX"
-        # Remove "Week_" prefix to match column name
-        week_number = latest_week.replace('Week_', '')
-        st.metric(
-            f"Average Occupancy ({latest_week})", 
-            f"{formatted_df[week_number].mean():.1f}%"
-        )
+        latest_week = selected_weeks[0]
+        
+        # Debug information
+        st.write("Debug Information:")
+        st.write("Available columns:", formatted_df.columns.tolist())
+        st.write("Latest week value:", latest_week)
+        
+        # Check if the column exists and handle accordingly
+        if latest_week in formatted_df.columns:
+            st.metric(
+                f"Average Occupancy ({latest_week})", 
+                f"{formatted_df[latest_week].mean():.1f}%"
+            )
+        else:
+            # Try with the week number only
+            week_number = latest_week.split('_')[1]
+            if week_number in formatted_df.columns:
+                st.metric(
+                    f"Average Occupancy (Week {week_number})", 
+                    f"{formatted_df[week_number].mean():.1f}%"
+                )
+            else:
+                st.warning(f"Could not find column for {latest_week}")
+        
         st.metric(
             "Average Unused Capacity", 
             f"{formatted_df['Avg_Capacity_Delta'].mean():.1f} hours"
         )
-else:
-    st.write("Please upload your data files")
