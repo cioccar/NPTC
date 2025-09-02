@@ -84,11 +84,6 @@ if uploaded_files:
     # Display the dataframe
     st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
     
-   # Replace the color coding and display section with this:
-
-    # Display the dataframe
-    st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
-    
     # Create a copy for formatting
     formatted_df = display_df.copy()
     
@@ -112,43 +107,37 @@ if uploaded_files:
 
     # Display metrics
     if selected_weeks:
-        latest_week = selected_weeks[0]
-        st.metric(
-            f"Average Occupancy ({latest_week})", 
-            f"{formatted_df[latest_week].mean():.1f}%"
-        )
-        st.metric(
-            "Average Unused Capacity", 
-            f"{formatted_df['Avg_Capacity_Delta'].mean():.1f} hours"
-        )
-    
-      # Display metrics
-    if selected_weeks:
-        latest_week = selected_weeks[0]
+        # Debug information first
+        st.write("Debug Information")
+        st.write("DataFrame columns:", formatted_df.columns.tolist())
+        st.write("Selected weeks:", selected_weeks)
         
-        # Debug information
-        st.write("Debug Information:")
-        st.write("Available columns:", formatted_df.columns.tolist())
-        st.write("Latest week value:", latest_week)
-        
-        # Check if the column exists and handle accordingly
-        if latest_week in formatted_df.columns:
-            st.metric(
-                f"Average Occupancy ({latest_week})", 
-                f"{formatted_df[latest_week].mean():.1f}%"
-            )
-        else:
-            # Try with the week number only
-            week_number = latest_week.split('_')[1]
-            if week_number in formatted_df.columns:
+        # Now try to calculate metrics
+        try:
+            latest_week = selected_weeks[0]
+            # Try to find the correct column name
+            week_cols = [col for col in formatted_df.columns if str(col).startswith('Week_')]
+            
+            if week_cols:
+                latest_available_week = week_cols[0]
                 st.metric(
-                    f"Average Occupancy (Week {week_number})", 
-                    f"{formatted_df[week_number].mean():.1f}%"
+                    f"Average Occupancy ({latest_available_week})", 
+                    f"{formatted_df[latest_available_week].mean():.1f}%"
                 )
             else:
-                st.warning(f"Could not find column for {latest_week}")
-        
-        st.metric(
-            "Average Unused Capacity", 
-            f"{formatted_df['Avg_Capacity_Delta'].mean():.1f} hours"
-        )
+                st.warning("No week columns found in the data")
+            
+            if 'Avg_Capacity_Delta' in formatted_df.columns:
+                st.metric(
+                    "Average Unused Capacity", 
+                    f"{formatted_df['Avg_Capacity_Delta'].mean():.1f} hours"
+                )
+            else:
+                st.warning("Avg_Capacity_Delta column not found")
+                
+        except Exception as e:
+            st.error(f"Error calculating metrics: {str(e)}")
+            st.write("Full column list:", formatted_df.columns.tolist())
+            
+else:
+    st.write("Please upload your data files")
