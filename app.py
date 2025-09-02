@@ -75,10 +75,15 @@ if uploaded_files:
     # Create display dataframe
     display_df = occupancy_pivot.copy()
     
-    # Add average occupancy
+    # Filter columns based on selected weeks
+    selected_columns = ['Staff_Group'] + selected_weeks
+    display_df = display_df[display_df.columns.intersection(selected_weeks)]
+    capacity_pivot = capacity_pivot[capacity_pivot.columns.intersection(selected_weeks)]
+    
+    # Add average occupancy for selected weeks only
     display_df['Avg_Occupancy'] = display_df.mean(axis=1)
     
-    # Add average capacity delta
+    # Add average capacity delta for selected weeks only
     display_df['Avg_Capacity_Delta'] = capacity_pivot.mean(axis=1)
     
     # Reset index to make Staff_Group a column
@@ -108,21 +113,20 @@ if uploaded_files:
     # Display the styled dataframe
     st.dataframe(styled_df)
 
-    # Display metrics
+    # Display metrics for selected weeks
     if selected_weeks:
-        latest_week = selected_weeks[0]
+        # Calculate averages only for selected weeks
+        avg_occupancy = formatted_df[selected_weeks].mean().mean()
+        avg_capacity_delta = formatted_df['Avg_Capacity_Delta'].mean()
         
-        if latest_week in formatted_df.columns:
-            st.metric(
-                f"Average Occupancy ({latest_week})", 
-                f"{formatted_df[latest_week].mean():.1f}%"
-            )
-            st.metric(
-                "Average Unused Capacity", 
-                f"{formatted_df['Avg_Capacity_Delta'].mean():.1f} hours"
-            )
-        else:
-            st.error(f"Column {latest_week} not found. Available columns: {formatted_df.columns.tolist()}")
+        st.metric(
+            f"Average Occupancy (Selected Weeks)", 
+            f"{avg_occupancy:.1f}%"
+        )
+        st.metric(
+            "Average Unused Capacity (Selected Weeks)", 
+            f"{avg_capacity_delta:.1f} hours"
+        )
             
 else:
     st.write("Please upload your data files")
