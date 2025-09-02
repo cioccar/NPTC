@@ -105,7 +105,7 @@ if uploaded_files:
     # Display the styled dataframe
     st.dataframe(styled_df)
 
-    # Display metrics
+       # Display metrics
     if selected_weeks:
         # Debug information first
         st.write("Debug Information")
@@ -114,18 +114,16 @@ if uploaded_files:
         
         # Now try to calculate metrics
         try:
-            latest_week = selected_weeks[0]
-            # Try to find the correct column name
-            week_cols = [col for col in formatted_df.columns if str(col).startswith('Week_')]
+            latest_week = selected_weeks[0]  # This will be "Week_35"
+            week_number = latest_week.split('_')[1]  # This will get "35"
             
-            if week_cols:
-                latest_available_week = week_cols[0]
+            if week_number in formatted_df.columns:
                 st.metric(
-                    f"Average Occupancy ({latest_available_week})", 
-                    f"{formatted_df[latest_available_week].mean():.1f}%"
+                    f"Average Occupancy ({latest_week})", 
+                    f"{formatted_df[week_number].mean():.1f}%"
                 )
             else:
-                st.warning("No week columns found in the data")
+                st.warning(f"Week {week_number} not found in the data")
             
             if 'Avg_Capacity_Delta' in formatted_df.columns:
                 st.metric(
@@ -138,6 +136,5 @@ if uploaded_files:
         except Exception as e:
             st.error(f"Error calculating metrics: {str(e)}")
             st.write("Full column list:", formatted_df.columns.tolist())
-            
 else:
     st.write("Please upload your data files")
