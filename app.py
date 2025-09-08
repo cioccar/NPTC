@@ -9,34 +9,38 @@ st.sidebar.markdown("""
     .sidebar-header {
         font-size: 16px;
         font-weight: bold;
-        margin-bottom: 10px;
-        margin-top: 20px;
+        padding: 10px 0px 10px 0px;
+        border-bottom: 1px solid #cccccc;
     }
-    .stButton>button {
-        width: 100%;
-        background-color: white;
-        color: black;
-        border: 1px solid #cccccc;
-        padding: 10px 24px;
-        border-radius: 4px;
-    }
-    .css-1dhfmct {
-        padding-top: 0px !important;
-    }
-    .css-1v0mbdj {
-        margin-top: 10px;
+    /* Custom styling for the file uploader */
+    .css-1x8cf1d {
+        padding: 10px 0px 10px 0px;
+        border-bottom: 1px solid #cccccc;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Quicksight Link section
-st.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
-if st.sidebar.button('Shrinkage and Occupancy Dashboard'):
-    st.markdown('''
-    <script>
-        window.open('https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c', '_blank');
-    </script>
-    ''', unsafe_allow_html=True)
+# Quicksight Link section with direct URL
+st.sidebar.markdown("""
+<div>
+    <p class="sidebar-header">Quicksight Link</p>
+    <a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c" target="_blank">
+        <div style="
+            background-color: white;
+            border: 1px solid #cccccc;
+            color: black;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 4px 0px;
+        ">Shrinkage and Occupancy Dashboard</div>
+    </a>
+</div>
+""", unsafe_allow_html=True)
 
 # Data Upload section
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
@@ -45,7 +49,6 @@ uploaded_files = st.sidebar.file_uploader(
     accept_multiple_files=True,
     type=['csv']
 )
-
 def process_file(file):
     # Read the file
     df = pd.read_csv(file)
