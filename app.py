@@ -9,17 +9,12 @@ st.sidebar.markdown("""
     .sidebar-header {
         font-size: 16px;
         font-weight: bold;
-        margin-bottom: 10px;
+        margin-bottom: 0px;  /* Reduced from 10px to 0px */
     }
-    /* Custom styling for file uploader */
+    /* Add custom CSS to reduce space in file uploader */
     .css-1dhfmct {
-        border: 1px solid #cccccc !important;
-        border-radius: 4px !important;
-        padding: 10px !important;
-    }
-    /* Remove default border */
-    .css-1dhfmct > div {
-        border: none !important;
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
     }
 </style>
 """, unsafe_allow_html=True)
