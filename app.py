@@ -118,7 +118,7 @@ st.sidebar.markdown("""
 """, unsafe_allow_html=True)
 
 # Quicksight Link section
-st.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
+sst.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
 st.sidebar.markdown('''
 <a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c" target="_blank">
     <button style="
@@ -137,7 +137,7 @@ st.sidebar.markdown('''
         width: 100%;
     ">Shrinkage and Occupancy Dashboard</button>
 </a>
-''', unsafe_allow_html=Truerue)
+''', unsafe_allow_html=True)
 
 # Data Upload section with reduced spacing
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
