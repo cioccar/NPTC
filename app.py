@@ -4,7 +4,7 @@ import pandas as pd
 st.title('NPT hours available')
 
 # Sidebar headers with consistent styling
-st.sidebar.markdokdown("""
+st.sidebar.markdown("""
 <style>
     div[data-testid="stMarkdownContainer"] > h3 {
         margin-bottom: 1rem;
@@ -41,6 +41,7 @@ uploaded_files = st.sidebar.file_uploader(
     accept_multiple_files=True,
     type=['csv']
 )
+
 def process_file(file):
     # Read the file
     df = pd.read_csv(file)
@@ -61,7 +62,7 @@ if uploaded_files:
     all_data = pd.concat([process_file(file) for file in uploaded_files])
     
     # Sidebar filters
-    st.sidebar.markdown('<p class="sidebar-header">Filters</p>', unsafe_allow_html=True)
+    st.sidebar.markdown("### Filters")
     
     # Get available weeks and add "Week_" prefix
     available_weeks = sorted(all_data['Week'].unique(), reverse=True)
@@ -75,7 +76,7 @@ if uploaded_files:
     )
     
     # Staff Group filter
-    selected_groups = st.sidsidebar.multiselect(
+    selected_groups = st.sidebar.multiselect(
         'Select Staff Groups',
         all_data['Staff_Group'].unique().tolist(),
         default=all_data['Staff_Group'].unique().tolist()
