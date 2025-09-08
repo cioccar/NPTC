@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from urllib.parse import quote
+import base64
 
 st.title('NPT hours available')
 
@@ -23,7 +24,7 @@ st.sidebar.markdown("""
 # Quicksight Link section
 st.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
 st.sidebar.markdown('''
-<a href="hthttps://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/6fe79f20-960d-4968-b1d6-2e401503e6bc">
+<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c" target="_blank">
     <button style="
         background-color: white; 
         border: 1px solid #cccccc;
@@ -63,6 +64,58 @@ def process_file(file):
     })
     
     return df_processed
+
+def generate_email_html(latest_week, email_table_df, actual_occupancy, ytd_goal):
+    html_content = f"""
+    <html>
+    <head>
+        <style>
+            table {{border-collapse: collapse; width: 100%;}}
+            th, td {{border: 1px solid black; padding: 8px; text-align: left;}}
+            th {{background-color: #f2f2f2;}}
+        </style>
+    </head>
+    <body>
+        <h2 style="background-color: #90EE90; color: white; padding: 10px;">NPT Request</h2>
+        <p>Hello team,</p>
+        <p>This email is to inform you about NPT hours that can be taken by DE associates for Seller and Brand business units.</p>
+        <p>This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:</p>
+        
+        <table>
+            <tr>
+                <th>Week {latest_week-3}</th>
+                <th>Week {latest_week-2}</th>
+                <th>Week {latest_week-1}</th>
+                <th>Week {latest_week}</th>
+            </tr>
+            <tr>
+                <td>Actual Occupancy %</td>
+                {' '.join(f'<td>{occ:.1f}%</td>' for occ in actual_occupancy)}
+            </tr>
+            <tr>
+                <td>YTD Goal %</td>
+                {' '.join(f'<td>{goal:.1f}%</td>' for goal in ytd_goal)}
+            </tr>
+        </table>
+        
+        <p>In the table below, you have the available hours divided by weeks and Staff Groups:</p>
+        
+        <table>
+            <tr>
+                <th>Staff Groups</th>
+                {' '.join(f'<th>{col}</th>' for col in email_table_df.columns if col != 'Staff_Group')}
+            </tr>
+            {email_table_df.to_html(index=False, header=False)}
+        </table>
+        
+        <p>To request NPT, you can use the River <a href="#">link</a> for NPT requests.</p>
+        <p><strong>Note:</strong> Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.</p>
+        <p>Thank you for your support!</p>
+        <p>Best Regards,<br>EMEA WFM</p>
+    </body>
+    </html>
+    """
+    return html_content
 
 # Process all uploaded files
 if uploaded_files:
@@ -187,59 +240,30 @@ if uploaded_files:
             f"{unused_capacity:.1f} hours"
         )
 
-        # Create email content
-        # Get the latest week number from the selected weeks
+        # Generate email content
         latest_week = max([int(week.replace('Week_', '')) for week in selected_weeks])
         
-        # Create table data for email - using only Staff_Group and Capacity_Delta
         email_table_df = formatted_df[['Staff_Group'] + selected_weeks].copy()
         for week in selected_weeks:
-            email_table_df[week] = capacity_pivot[week].round(0)  # Use Capacity Delta values
+            email_table_df[week] = capacity_pivot[week].round(0)
         
-        # Convert DataFrame to string format for email
-        email_table = email_table_df.to_string(index=False)
+        # These are example data. You should replace them with real data from your DataFrame.
+        actual_occupancy = [67.5, 67.8, 66.2, 66.7]
+        ytd_goal = [78.5, 78.5, 78.5, 78.5]
         
-        email_body = f"""NPT Request
-
-Hello team,
-
-This email is to inform you about NPT hours that can be taken by XX associates for Seller, Brand and Vendor business units:
-
-{email_table}
-
-To request NPT, you can use the River link for NPT requests.
-
-Note: Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.
-
-Thank you for your support!
-
-Best Regards,
-EMEA WFM"""
-
-        encoded_body = quote(email_body)
-        email_subject = f"NPT hours for XX Seller, Brand and Vendor | WK{latest_week}"
+        html_content = generate_email_html(latest_week, email_table_df, actual_occupancy, ytd_goal)
+        
+        # Encode the HTML content
+        b64 = base64.b64encode(html_content.encode()).decode()
         
         # Add email button to sidebar
         st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
-        st.sidebar.markdown(f'''
-        <a href="mailto:?subject={quote(email_subject)}&body={encoded_body}" target="_blank">
-            <button style="
-                background-color: white; 
-                border: 1px solid #cccccc;
-                color: black;
-                padding: 10px 24px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
-                cursor: pointer;
-                border-radius: 4px;
-                transition: background-color 0.3s;
-                width: 100%;
-            ">Generate Email</button>
-        </a>
-        ''', unsafe_allow_html=True)
+        href = f'<a href="data:text/html;base64,{b64}" download="email_template.html">Download Email Template</a>'
+        st.sidebar.markdown(href, unsafe_allow_html=True)
+        st.sidebar.markdown("1. Click the link above to download the HTML template.")
+        st.sidebar.markdown("2. Open a new email in Outlook.")
+        st.sidebar.markdown("3. Go to 'Insert' > 'File' and select the downloaded HTML file.")
+            
 else:
     st.write("Please upload your data files")
     # Default email button when no data is loaded
