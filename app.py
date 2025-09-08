@@ -1,4 +1,4 @@
-import streamlit as stt
+import streamlit as st
 import pandas as pd
 from urllib.parse import quote
 
@@ -118,7 +118,7 @@ st.sidebar.markdown("""
 """, unsafe_allow_html=True)
 
 # Quicksight Link section
-sst.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
+st.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
 st.sidebar.markdown('''
 <a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c" target="_blank">
     <button style="
@@ -140,10 +140,12 @@ st.sidebar.markdown('''
 ''', unsafe_allow_html=True)
 
 # Data Upload section with reduced spacing
+ng
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
     "From the above dashboard",
     accept_multiple_files=True,
+  
     type=['csv']
 )
 
@@ -156,6 +158,10 @@ def process_file(file):
         'Capacity_Delta': df['Capacity Delta Hrs']
     })
     return df_processed
+
+formatted_df = None
+capacity_pivot = None
+selected_weeks = None
 
 if uploaded_files:
     all_data = pd.concat([process_file(file) for file in uploaded_files])
@@ -202,7 +208,7 @@ if uploaded_files:
     capacity_pivot = capacity_pivot[capacity_pivot.columns.intersection(selected_weeks)]
     
     display_df['Avg_Occupancy'] = display_df.mean(axis=1)
-    display_df['Avg_Capacity_Delta'] = capacity_pivot.mean(axis=1)
+    display_df['Avg_Capacity_Delta'] = capaciacity_pivot.mean(axis=1)
     display_df = display_df.reset_index()
     
     st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
@@ -254,7 +260,7 @@ if uploaded_files:
 # Email Button section - Always visible in sidebar
 st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
 
-if uploaded_files and selected_weeks:
+if uploaded_files and selected_weeks and formatted_df is not None and capacity_pivot is not None:
     # If data is available, use it for the tables
     latest_week = max([int(week.replace('Week_', '')) for week in selected_weeks])
     
