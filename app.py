@@ -39,6 +39,7 @@ st.sidebar.markdown('''
 # Data Upload section
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
+    "", 
     accept_multiple_files=True,
     type=['csv']
 )
