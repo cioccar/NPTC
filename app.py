@@ -120,7 +120,7 @@ st.sidebar.markdown("""
 # Quicksight Link section
 st.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
 st.sidebar.markdown('''
-<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/aff17ce1-ff22-40b7-8053-db2e3d0f44a9">
+<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c" target="_blank">
     <button style="
         background-color: white; 
         border: 1px solid #cccccc;
@@ -135,9 +135,9 @@ st.sidebar.markdown('''
         border-radius: 4px;
         transition: background-color 0.3s;
         width: 100%;
-    ">ShrShrinkage and Occupancy Dashboard</button>
+    ">Shrinkage and Occupancy Dashboard</button>
 </a>
-''', unsafe_allow_html=True)
+''', unsafe_allow_html=Truerue)
 
 # Data Upload section with reduced spacing
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
@@ -251,71 +251,72 @@ if uploaded_files:
             f"{unused_capacity:.1f} hours"
         )
 
-        # Email generation
-        latest_week = max([int(week.replace('Week_', '')) for week in selected_weeks])
-        
-        email_table_df = formatted_df[['Staff_Group'] + selected_weeks].copy()
-        for week in selected_weeks:
-            email_table_df[week] = capacity_pivot[week].round(0)
-        
-        actual_occupancy = [67.5, 67.8, 66.2, 66.7]  # Replace with actual data
-        ytd_goal = [78.5, 78.5, 78.5, 78.5]  # Replace with actual data
-        
-        # Create tables and insert into template
-        occupancy_table = create_occupancy_table(latest_week, actual_occupancy, ytd_goal)
-        hours_table = create_hours_table(email_table_df)
-        
-        email_html = EMAIL_TEMPLATE.format(
-            occupancy_table=occupancy_table,
-            hours_table=hours_table
-        )
-        
-        # Create mailto link with HTML content
-        encoded_html = quote(email_html)
-        email_subject = f"NPT hours for XX Seller, Brand and Vendor | WK{latest_week}"
-        
-        # Add email button to sidebar
-        st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
-        mailto_link = f'mailto:?subject={quote(email_subject)}&body={encoded_html}'
-        
-        st.sidebar.markdown(f'''
-        <a href="{mailto_link}" target="_blank">
-            <button style="
-                background-color: white; 
-                border: 1px solid #cccccc;
-                color: black;
-                padding: 10px 24px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
-                cursor: pointer;
-                border-radius: 4px;
-                transition: background-color 0.3s;
-                width: 100%;
-            ">Generate Email</button>
-        </a>
-        ''', unsafe_allow_html=True)
+# Email Button section - Always visible in sidebar
+st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
+
+if uploaded_files and selected_weeks:
+    # If data is available, use it for the tables
+    latest_week = max([int(week.replace('Week_', '')) for week in selected_weeks])
+    
+    email_table_df = formatted_df[['Staff_Group'] + selected_weeks].copy()
+    for week in selected_weeks:
+        email_table_df[week] = capacity_pivot[week].round(0)
+    
+    actual_occupancy = [67.5, 67.8, 66.2, 66.7]  # Replace with actual data
+    ytd_goal = [78.5, 78.5, 78.5, 78.5]  # Replace with actual data
+    
+    # Create tables with actual data
+    occupancy_table = create_occupancy_table(latest_week, actual_occupancy, ytd_goal)
+    hours_table = create_hours_table(email_table_df)
+    
 else:
+    # Use placeholder data when no data is uploaded
+    latest_week = 35  # Example week number
+    placeholder_data = pd.DataFrame({
+        'Staff_Group': ['DE_BRAND_CW_DE', 'DE_FBA_ILAC_CW_DE', 'DE_FBA_CW_DE', 'DE_FBA_PCW_DE',
+                       'DE_FBA_ILAC_PCW_DE', 'DE_BRAND_PCW_DE', 'DE_MAT_CW_DE', 'DE_FBA_WI_DE'],
+        'WK37': [384, 338, 220, 180, 171, 122, 74, 42],
+        'WK38': [307, 271, 176, 144, 137, 98, 60, 33]
+    })
+    
+    actual_occupancy = [67.5, 67.8, 66.2, 66.7]
+    ytd_goal = [78.5, 78.5, 78.5, 78.5]
+    
+    # Create tables with placeholder data
+    occupancy_table = create_occupancy_table(latest_week, actual_occupancy, ytd_goal)
+    hours_table = create_hours_table(placeholder_data)
+
+# Generate email HTML with either actual or placeholder data
+email_html = EMAIL_TEMPLATE.format(
+    occupancy_table=occupancy_table,
+    hours_table=hours_table
+)
+
+# Create mailto link with HTML content
+encoded_html = quote(email_html)
+email_subject = f"NPT hours for XX Seller, Brand and Vendor | WK{latest_week}"
+mailto_link = f'mailto:?subject={quote(email_subject)}&body={encoded_html}'
+
+# Display the email button (always visible)
+st.sidebar.markdown(f'''
+<a href="{mailto_link}" target="_blank">
+    <button style="
+        background-color: white; 
+        border: 1px solid #cccccc;
+        color: black;
+        padding: 10px 24px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+        width: 100%;
+    ">Generate Email</button>
+</a>
+''', unsafe_allow_html=True)
+
+if not uploaded_files:
     st.write("Please upload your data files")
-    st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
-    st.sidebar.markdown('''
-    <a href="mailto:?subject=NPT%20hours%20for%20XX%20Seller%2C%20Brand%20and%20Vendor&body=Please%20upload%20data%20first" target="_blank">
-        <button style="
-            background-color: white; 
-            border: 1px solid #cccccc;
-            color: black;
-            padding: 10px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            width: 100%;
-        ">Generate Email</button>
-    </a>
-    ''', unsafe_allow_html=True)
