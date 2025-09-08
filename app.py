@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as stt
 import pandas as pd
 from urllib.parse import quote
 
