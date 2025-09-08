@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import webbrowser
+from urllib.parse import quote
 
 st.title('NPT hours available')
 
@@ -48,6 +50,7 @@ uploaded_files = st.sidebar.file_uploader(
     accept_multiple_files=True,
     type=['csv']
 )
+
 def process_file(file):
     # Read the file
     df = pd.read_csv(file)
@@ -184,6 +187,39 @@ if uploaded_files:
             "Total Unused Capacity (Green Rows)", 
             f"{unused_capacity:.1f} hours"
         )
+
+        # Generate email content with current metrics
+        email_body = f"""Please find the NPT hours available report:
+
+Average Occupancy (Selected Weeks): {avg_occupancy:.1f}%
+Total Unused Capacity (Green Rows): {unused_capacity:.1f} hours
+
+Dashboard Link:
+https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c
+"""
+        encoded_body = quote(email_body)
+        
+        # Add email button to sidebar
+        st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
+        st.sidebar.markdown(f'''
+        <a href="mailto:?subject=NPT%20Hours%20Available&body={encoded_body}" target="_blank">
+            <button style="
+                background-color: white; 
+                border: 1px solid #cccccc;
+                color: black;
+                padding: 10px 24px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+                width: 100%;
+            ">Generate Email</button>
+        </a>
+        ''', unsafe_allow_html=True)
             
 else:
     st.write("Please upload your data files")
