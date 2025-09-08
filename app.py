@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from urllib.parse import quote
 
-# Define the HTML email template at the top of the file
+# Define the HTML email template
 EMAIL_TEMPLATE = """
 <!DOCTYPE html>
 <html>
@@ -56,7 +56,6 @@ EMAIL_TEMPLATE = """
 </html>
 """
 
-# Helper functions for email generation
 def create_occupancy_table(latest_week, actual_occupancy, ytd_goal):
     table = """
     <table>
@@ -88,7 +87,7 @@ def create_occupancy_table(latest_week, actual_occupancy, ytd_goal):
 
 def create_hours_table(data):
     table = "<table><tr><th>Staff Groups</th>"
-    for col in data.columns[1:]:  # Skip Staff_Group column
+    for col in data.columns[1:]:
         table += f"<th>{col}</th>"
     table += "</tr>"
     
@@ -100,9 +99,19 @@ def create_hours_table(data):
     table += "</table>"
     return table
 
+def process_file(file):
+    df = pd.read_csv(file)
+    df_processed = pd.DataFrame({
+        'Staff_Group': df['1. STAFF GROUP'],
+        'Week': df['Period by'].str.extract(r'Week (\d+)')[0],
+        'Occupancy': df['Occupancy %'] * 100,
+        'Capacity_Delta': df['Capacity Delta Hrs']
+    })
+    return df_processed
+
 st.title('NPT hours available')
 
-# Sidebar headers with consistent styling
+# Sidebar headers styling
 st.sidebar.markdown("""
 <style>
     .sidebar-header {
@@ -117,12 +126,12 @@ st.sidebar.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Quicksight Link section
+# Quicksight Link
 st.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
 st.sidebar.markdown('''
 <a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c" target="_blank">
     <button style="
-        background-color: white; 
+        background-color: white;
         border: 1px solid #cccccc;
         color: black;
         padding: 10px 24px;
@@ -139,29 +148,17 @@ st.sidebar.markdown('''
 </a>
 ''', unsafe_allow_html=True)
 
-# Data Upload section with reduced spacing
-ng
+# Data Upload
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
     "From the above dashboard",
     accept_multiple_files=True,
-  
     type=['csv']
 )
 
-def process_file(file):
-    df = pd.read_csv(file)
-    df_processed = pd.DataFrame({
-        'Staff_Group': df['1. STAFF GROUP'],
-        'Week': df['Period by'].str.extract(r'Week (\d+)')[0],
-        'Occupancy': df['Occupancy %'] * 100,
-        'Capacity_Delta': df['Capacity Delta Hrs']
-    })
-    return df_processed
-
 formatted_df = None
 capacity_pivot = None
-selected_weeks = None
+selected_weekeeks = None
 
 if uploaded_files:
     all_data = pd.concat([process_file(file) for file in uploaded_files])
@@ -199,19 +196,15 @@ if uploaded_files:
         index='Staff_Group',
         columns='Week',
         values='Capacity_Delta'
-    )
+       )
     
     display_df = occupancy_pivot.copy()
-    
-    selected_columns = ['Staff_Group'] + selected_weeks
     display_df = display_df[display_df.columns.intersection(selected_weeks)]
     capacity_pivot = capacity_pivot[capacity_pivot.columns.intersection(selected_weeks)]
     
     display_df['Avg_Occupancy'] = display_df.mean(axis=1)
-    display_df['Avg_Capacity_Delta'] = capaciacity_pivot.mean(axis=1)
+    display_df['Avg_Capacity_Delta'] = capacity_pivot.mean(axis=1)
     display_df = display_df.reset_index()
-    
-    st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
     
     formatted_df = display_df.copy()
     numeric_cols = [col for col in formatted_df.columns if col != 'Staff_Group']
@@ -242,6 +235,8 @@ if uploaded_files:
 
     row_height = 35
     total_height = len(selected_groups) * row_height
+    
+    st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
     st.dataframe(styled_df, height=total_height)
 
     if selected_weeks:
@@ -253,61 +248,47 @@ if uploaded_files:
             f"{avg_occupancy:.1f}%"
         )
         st.metric(
-            "Total Unused Capacity (Green Rows)", 
+            "Total Unusedsed Capacity (Green Rows)", 
             f"{unused_capacity:.1f} hours"
         )
 
-# Email Button section - Always visible in sidebar
+# Email Button section - Always visible
 st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
 
+# Determine which data to use for email
 if uploaded_files and selected_weeks and formatted_df is not None and capacity_pivot is not None:
-    # If data is available, use it for the tables
     latest_week = max([int(week.replace('Week_', '')) for week in selected_weeks])
-    
     email_table_df = formatted_df[['Staff_Group'] + selected_weeks].copy()
     for week in selected_weeks:
         email_table_df[week] = capacity_pivot[week].round(0)
-    
-    actual_occupancy = [67.5, 67.8, 66.2, 66.7]  # Replace with actual data
-    ytd_goal = [78.5, 78.5, 78.5, 78.5]  # Replace with actual data
-    
-    # Create tables with actual data
-    occupancy_table = create_occupancy_table(latest_week, actual_occupancy, ytd_goal)
-    hours_table = create_hours_table(email_table_df)
-    
 else:
-    # Use placeholder data when no data is uploaded
-    latest_week = 35  # Example week number
-    placeholder_data = pd.DataFrame({
+    latest_week = 35
+    email_table_df = pd.DataFrame({
         'Staff_Group': ['DE_BRAND_CW_DE', 'DE_FBA_ILAC_CW_DE', 'DE_FBA_CW_DE', 'DE_FBA_PCW_DE',
                        'DE_FBA_ILAC_PCW_DE', 'DE_BRAND_PCW_DE', 'DE_MAT_CW_DE', 'DE_FBA_WI_DE'],
         'WK37': [384, 338, 220, 180, 171, 122, 74, 42],
         'WK38': [307, 271, 176, 144, 137, 98, 60, 33]
     })
-    
-    actual_occupancy = [67.5, 67.8, 66.2, 66.7]
-    ytd_goal = [78.5, 78.5, 78.5, 78.5]
-    
-    # Create tables with placeholder data
-    occupancy_table = create_occupancy_table(latest_week, actual_occupancy, ytd_goal)
-    hours_table = create_hours_table(placeholder_data)
 
-# Generate email HTML with either actual or placeholder data
+actual_occupancy = [67.5, 67.8, 66.2, 66.7]
+ytd_goal = [78.5, 78.5, 78.5, 78.5]
+
+occupancy_table = create_occupancy_table(latest_week, actual_occupancy, ytd_goal)
+hours_table = create_hours_table(email_table_df)
+
 email_html = EMAIL_TEMPLATE.format(
     occupancy_table=occupancy_table,
     hours_table=hours_table
 )
 
-# Create mailto link with HTML content
 encoded_html = quote(email_html)
 email_subject = f"NPT hours for XX Seller, Brand and Vendor | WK{latest_week}"
 mailto_link = f'mailto:?subject={quote(email_subject)}&body={encoded_html}'
 
-# Display the email button (always visible)
 st.sidebar.markdown(f'''
 <a href="{mailto_link}" target="_blank">
     <button style="
-        background-color: white; 
+        background-color: white;
         border: 1px solid #cccccc;
         color: black;
         padding: 10px 24px;
