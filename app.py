@@ -14,14 +14,6 @@ st.sidebar.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Data Upload section
-st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
-uploaded_files = st.sidebar.file_uploader(
-    "Upload your data files", 
-    accept_multiple_files=True,
-    type=['csv']
-)
-
 # Quicksight Link section
 st.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
 st.sidebar.markdown('''
@@ -43,6 +35,14 @@ st.sidebar.markdown('''
     ">Shrinkage and Occupancy Dashboard</button>
 </a>
 ''', unsafe_allow_html=True)
+
+# Data Upload section
+st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
+uploaded_files = st.sidebar.file_uploader(
+    "Upload your data files", 
+    accept_multiple_files=True,
+    type=['csv']
+)
 
 def process_file(file):
     # Read the file
