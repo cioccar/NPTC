@@ -9,22 +9,7 @@ st.sidebar.markdown("""
     .sidebar-header {
         font-size: 16px;
         font-weight: bold;
-        margin-bottom: 15px !important;  /* Consistent spacing after headers */
-    }
-    /* Custom styling for file uploader */
-    .css-1dhfmct {
-        border: 1px solid #cccccc !important;
-        border-radius: 4px !important;
-        padding: 10px !important;
-        margin-top: 0px !important;  /* Remove extra top margin */
-    }
-    /* Remove default border */
-    .css-1dhfmct > div {
-        border: none !important;
-    }
-    /* Ensure consistent spacing for button */
-    .stButton > button {
-        margin-top: 0px !important;
+        margin-bottom: 20px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -42,16 +27,14 @@ st.sidebar.markdown('''
         text-decoration: none;
         display: inline-block;
         font-size: 16px;
-        margin: 0px 2px;  /* Removed top/bottom margin */
         cursor: pointer;
         border-radius: 4px;
-        transition: background-color 0.3s;
         width: 100%;
     ">Shrinkage and Occupancy Dashboard</button>
 </a>
 ''', unsafe_allow_html=True)
 
-# Data Upload section with consistent spacing
+# Data Upload section
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
     "",
