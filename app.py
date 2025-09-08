@@ -3,8 +3,27 @@ import pandas as pd
 
 st.title('NPT hours available')
 
-# Sidebar button for QuickSight dashboard
-st.sidebar.markdown("### Quicksight Link")
+# Sidebar headers with consistent styling
+st.sidebar.markdown("""
+<style>
+    .sidebar-header {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Data Upload section
+st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
+uploaded_files = st.sidebar.file_uploader(
+    "Upload your data files", 
+    accept_multiple_files=True,
+    type=['csv']
+)
+
+# Quicksight Link section
+st.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
 st.sidebar.markdown('''
 <a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c" target="_blank">
     <button style="
@@ -20,17 +39,10 @@ st.sidebar.markdown('''
         cursor: pointer;
         border-radius: 4px;
         transition: background-color 0.3s;
+        width: 100%;
     ">Shrinkage and Occupancy Dashboard</button>
 </a>
 ''', unsafe_allow_html=True)
-
-# File uploader in sidebar
-st.sidebar.header('Data Upload')
-uploaded_files = st.sidebar.file_uploader(
-    "Upload your data files", 
-    accept_multiple_files=True,
-    type=['csv']
-)
 
 def process_file(file):
     # Read the file
@@ -52,7 +64,7 @@ if uploaded_files:
     all_data = pd.concat([process_file(file) for file in uploaded_files])
     
     # Sidebar filters
-    st.sidebar.header('Filters')
+    st.sidebar.markdown('<p class="sidebar-header">Filters</p>', unsafe_allow_html=True)
     
     # Get available weeks and add "Week_" prefix
     available_weeks = sorted(all_data['Week'].unique(), reverse=True)
