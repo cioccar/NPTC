@@ -5,7 +5,7 @@ st.title('NPT hours available')
 
 # Sidebar button for QuickSight dashboard
 st.sidebar.markdown("### Quick Links")
-if st.sidebar.button('Shrinkage and Occupancy dash'):
+if st.sidebar.button('Shrinkage and Occupancy Dashboard'):
     st.sidebar.markdown('''
     <a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c" target="_blank">
         Click here to open the Shrinkage and Occupancy dashboard
