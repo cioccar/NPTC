@@ -3,6 +3,16 @@ import pandas as pd
 
 st.title('NPT hours available')
 
+# Sidebar headers with consistent styling
+st.sidebar.markdokdown("""
+<style>
+    div[data-testid="stMarkdownContainer"] > h3 {
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Quicksight Link section
 st.sidebar.markdown("### Quicksight Link")
 st.sidebar.markdown('''
@@ -16,10 +26,9 @@ st.sidebar.markdown('''
         text-decoration: none;
         display: inline-block;
         font-size: 16px;
-        margin: 4px 2px;
+        margin: 0;
         cursor: pointer;
         border-radius: 4px;
-        transition: background-color 0.3s;
         width: 100%;
     ">Shrinkage and Occupancy Dashboard</button>
 </a>
