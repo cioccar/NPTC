@@ -9,12 +9,10 @@ st.sidebar.markdown("""
     .sidebar-header {
         font-size: 16px;
         font-weight: bold;
-        margin-bottom: 0px;  /* Reduced from 10px to 0px */
+        margin-bottom: 16px !important;  /* Consistent spacing for all headers */
     }
-    /* Add custom CSS to reduce space in file uploader */
-    .css-1dhfmct {
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
+    .element-container {
+        margin-bottom: 16px !important;  /* Consistent spacing for elements */
     }
 </style>
 """, unsafe_allow_html=True)
@@ -32,7 +30,7 @@ st.sidebar.markdown('''
         text-decoration: none;
         display: inline-block;
         font-size: 16px;
-        margin: 4px 2px;
+        margin: 0;
         cursor: pointer;
         border-radius: 4px;
         transition: background-color 0.3s;
@@ -41,10 +39,10 @@ st.sidebar.markdown('''
 </a>
 ''', unsafe_allow_html=True)
 
-# Data Upload section with reduced spacing
+# Data Upload section
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
-    "From the above dashboard",
+    "",  # Removed "From the above dashboard"
     accept_multiple_files=True,
     type=['csv']
 )
