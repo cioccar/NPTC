@@ -9,39 +9,31 @@ st.sidebar.markdown("""
     .sidebar-header {
         font-size: 16px;
         font-weight: bold;
-        margin-bottom: 0px;  /* Reduced from 10px to 0px */
+        margin-bottom: 10px;
+        margin-top: 20px;
     }
-    /* Add custom CSS to reduce space in file uploader */
+    .stButton>button {
+        width: 100%;
+        background-color: white;
+        color: black;
+        border: 1px solid #cccccc;
+        padding: 10px 24px;
+        border-radius: 4px;
+    }
     .css-1dhfmct {
         padding-top: 0px !important;
-        padding-bottom: 0px !important;
+    }
+    .css-1v0mbdj {
+        margin-top: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Quicksight Link section
 st.sidebar.markdown('<p class="sidebar-header">Quicksight Link</p>', unsafe_allow_html=True)
-st.sidebar.markdown('''
-<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c" target="_blank">
-    <button style="
-        background-color: white; 
-        border: 1px solid #cccccc;
-        color: black;
-        padding: 10px 24px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-        width: 100%;
-    ">Shrinkage and Occupancy Dashboard</button>
-</a>
-''', unsafe_allow_html=True)
+st.sidebar.button('Shrinkage and Occupancy Dashboard')
 
-# Data Upload section with reduced spacing
+# Data Upload section
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
     "From above dashboard",
