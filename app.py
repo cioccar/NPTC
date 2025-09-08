@@ -49,7 +49,7 @@ st.sidebar.markdown('''
 # Data Upload section with reduced spacing
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
-    "From above dashboard",
+    "",
     accept_multiple_files=True,
     type=['csv']
 )
