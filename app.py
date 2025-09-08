@@ -9,7 +9,12 @@ st.sidebar.markdown("""
     .sidebar-header {
         font-size: 16px;
         font-weight: bold;
-        margin-bottom: 10px;
+        margin-bottom: 0px;  /* Reduced from 10px to 0px */
+    }
+    /* Add custom CSS to reduce space in file uploader */
+    .css-1dhfmct {
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -36,7 +41,7 @@ st.sidebar.markdown('''
 </a>
 ''', unsafe_allow_html=True)
 
-# Data Upload section
+# Data Upload section with reduced spacing
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
     "", 
@@ -90,7 +95,7 @@ if uploaded_files:
     ].copy()
     
     # Add "Week_" prefix to the Week column before pivoting
-    filtered_data['Week'] = 'Week_' + filtered_data['Week'].astype(str)
+    filtered_data['Week'] = 'Week_' + filteltered_data['Week'].astype(str)
     
     # Create pivot tables for Occupancy and Capacity Delta
     occupancy_pivot = filtered_data.pivot(
