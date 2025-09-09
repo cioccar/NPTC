@@ -64,31 +64,58 @@ def process_file(file):
     
     return df_processed
 
-# Email Template
+# Email Template with HTML formatting
 email_template = """
-Hello team,
+<div style="font-family: 'Calibri', sans-serif;">
+    <div style="background-color: #90EE90; padding: 10px; text-align: center;">
+        <span style="font-size: 24px; color: white;">NPT Request</span>
+    </div>
+    <div style="border: 1px solid #ccc; padding: 20px; margin-top: 0;">
+        Hello team,<br><br>
+        
+        This email is to inform you about NPT hours that can be taken by DE associates for Seller, Brand and Vendor business units.<br><br>
+        
+        This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:<br><br>
+        
+        <table style="margin-left: 40px;">
+            <tr>
+                <td></td>
+                <td>Week 32</td>
+                <td>Week 33</td>
+                <td>Week 34</td>
+                <td>Week 35</td>
+            </tr>
+            <tr>
+                <td>Actual Occupancy %</td>
+                <td>67.5%</td>
+                <td>67.8%</td>
+                <td>66.2%</td>
+                <td>66.7%</td>
+            </tr>
+            <tr>
+                <td>YTD Goal %</td>
+                <td>78.5%</td>
+                <td>78.5%</td>
+                <td>78.5%</td>
+                <td>78.5%</td>
+            </tr>
+        </table><br>
+        
+        In the table below, you have the available hours divided by weeks and Staff Groups:<br><br>
+        
+        {table_placeholder}<br><br>
+        
+        To request NPT, you can use the River link for NPT requests.<br><br>
+        
+        Note: Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.<br><br>
+        
+        Thank you for your support!<br><br>
+        
+        Best Regards,<br>
+        EMEA WFM
+    </div>
+</div>"""
 
-This email is to inform you about NPT hours that can be taken by DE associates for Seller, Brand and Vendor business units.
-
-This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:
-
-                    Week 32   Week 33   Week 34   Week 35
-Actual Occupancy %   67.5%     67.8%     66.2%     66.7%
-YTD Goal %           78.5%     78.5%     78.5%     78.5%
-
-In the table below, you have the available hours divided by weeks and Staff Groups:
-
-{table_placeholder}
-
-To request NPT, you can use the River link for NPT requests.
-
-Note: Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.
-
-Thank you for your support!
-
-Best Regards,
-EMEA WFM
-"""
 # Process all uploaded files
 if uploaded_files:
     # Combine all uploaded files
@@ -185,17 +212,17 @@ if uploaded_files:
     row_height = 35  # height per row in pixels
     total_height = len(selected_groups) * row_height
 
-    # Display the styled dataframe with dynamic height
+    # Display the styled dataframe with dynamicmic height
     st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
     st.dataframe(styled_df, height=total_height)
 
-    # Display metrics for selected weeks
+    # Display metritrics for selected weeks
     if selected_weeks:
         avg_occupancy = formatted_df[selected_weeks].mean().mean()
         unused_capacity = formatted_df[formatted_df['Avg_Occupancy'] <= 74]['Avg_Capacity_Delta'].sum()
         
         st.metric(
-            f"Average Occupancy (Selected Weeks)", 
+            f"Average Occupancy (Se(Selected Weeks)", 
             f"{avg_occupancy:.1f}%"
         )
         st.metric(
