@@ -215,7 +215,7 @@ if uploaded_files:
     email_table = format_table_for_email(formatted_df)
     
     # Add email button to sidebar
-    st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
+    st.sidebar.markdown('<p class="sidebar-header">Outlook</p>', unsafe_allow_html=True)
     subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
     email_body = email_template.format(table_placeholder=email_table)
     encoded_body = quote(email_body)
