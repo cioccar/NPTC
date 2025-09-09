@@ -89,14 +89,10 @@ Thank you for your support!
 Best Regards,
 EMEA WFM
 """
-
 # Process all uploaded files
 if uploaded_files:
     # Combine all uploaded files
     all_data = pd.concat([process_file(file) for file in uploaded_files])
-    
-    # Sidebar filters
-    st.sidebar.markdown("### Filters")
     
     # Get available weeks and add "Week_" prefix
     available_weeks = sorted(all_data['Week'].unique(), reverse=True)
@@ -124,14 +120,14 @@ if uploaded_files:
     # Add "Week_" prefix to the Week column before pivoting
     filtered_data['Week'] = 'Week_' + filtered_data['Week'].astype(str)
     
-       # Create pivot tables for Occupancy and Capacity Delta
+    # Create pivot tables for Occupancy and Capacity Delta
     occupancy_pivot = filtered_data.pivot(
         index='Staff_Group',
         columns='Week',
         values='Occupancy'
     )
     
-    capacity_pivot =t = filtered_data.pivot(
+    capacity_pivot = filtered_data.pivot(
         index='Staff_Group',
         columns='Week',
         values='Capacity_Delta'
@@ -141,7 +137,6 @@ if uploaded_files:
     display_df = occupancy_pivot.copy()
     
     # Filter columns based on selected weeks
-    selected_columns = ['Staff_Group'] + selected_weeks
     display_df = display_df[display_df.columns.intersection(selected_weeks)]
     capacity_pivot = capacity_pivot[capacity_pivot.columns.intersection(selected_weeks)]
     
@@ -154,9 +149,6 @@ if uploaded_files:
     # Reset index to make Staff_Group a column
     display_df = display_df.reset_index()
     
-    # Display the dataframe
-    st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
-    
     # Create a copy for formatting
     formatted_df = display_df.copy()
     
@@ -165,21 +157,21 @@ if uploaded_files:
     for col in numeric_cols:
         formatted_df[col] = pd.to_numeric(formatted_df[col], errors='coerce')
 
-    # Modified color coding function to only color specific columns
-def color_rows(row):
-    avg_occupancy = row['Avg_Occupancy']
-    colors = []
-    for col in row.index:  # Removed the extra 'in'
-        if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
-            colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
-        else:
-            colors.append('')
-    return colors
+    # Modified color coding function
+    def color_rows(row):
+        avg_occupancy = row['Avg_Occupancy']
+        colors = []
+        for col in row.index:
+            if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
+                colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
+            else:
+                colors.append('')
+        return colors
 
     # Apply formatting and styling
     styled_df = formatted_df.style\
         .format({
-            'Avg_Occupancancy': '{:.1f}%',
+            'Avg_Occupancy': '{:.1f}%',
             'Avg_Capacity_Delta': '{:.1f}',
             **{col: '{:.1f}%' for col in formatted_df.columns if col not in ['Staff_Group', 'Avg_Capacity_Delta']}
         })\
@@ -191,17 +183,15 @@ def color_rows(row):
 
     # Calculate dynamic height based on number of staff groups
     row_height = 35  # height per row in pixels
-    total_height = len(selected_groups) * row_height  # removed header_height andand extra row
+    total_height = len(selected_groups) * row_height
 
     # Display the styled dataframe with dynamic height
+    st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
     st.dataframe(styled_df, height=total_height)
 
     # Display metrics for selected weeks
     if selected_weeks:
-        # Calculate average occupancy for selected weeks
         avg_occupancy = formatted_df[selected_weeks].mean().mean()
-        
-        # Calculate sum of capacity delta hours only for rows with occupancy < 74%
         unused_capacity = formatted_df[formatted_df['Avg_Occupancy'] <= 74]['Avg_Capacity_Delta'].sum()
         
         st.metric(
@@ -215,9 +205,7 @@ def color_rows(row):
 
     # Function to format the table for email
     def format_table_for_email(df):
-        # Format the dataframe as a string
         table_str = df.to_string(index=False, justify='right')
-        # Add a line of dashes under the header
         header_width = len(table_str.split('\n')[0])
         table_str = table_str.split('\n')
         table_str.insert(1, '-' * header_width)
@@ -225,7 +213,7 @@ def color_rows(row):
 
     # Format the table for email
     email_table = format_table_for_email(formatted_df)
-
+    
     # Add email button to sidebar
     st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
     subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
@@ -250,11 +238,11 @@ def color_rows(row):
         ">Generate Email</button>
     </a>
     ''', unsafe_allow_html=True)
-            
+
 else:
     st.write("Please upload your data files")
-
-    # Add email button to sidebar (always available, even when no data is uploaded)
+    
+    # Add email button to sidebar (when no data is uploaded)
     st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
     subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
     email_body = email_template.format(table_placeholder="[No data available]")
