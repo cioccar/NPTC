@@ -166,15 +166,15 @@ if uploaded_files:
         formatted_df[col] = pd.to_numeric(formatted_df[col], errors='coerce')
 
     # Modified color coding function to only color specific columns
-    def color_rows(row):
-        avg_occupancy = row['Avg_Occupancy']
-        colors = []
-        for col in in row.index:
-            if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
-                colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
-            else:
-                colors.append('')
-        return colors
+def color_rows(row):
+    avg_occupancy = row['Avg_Occupancy']
+    colors = []
+    for col in row.index:  # Removed the extra 'in'
+        if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
+            colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
+        else:
+            colors.append('')
+    return colors
 
     # Apply formatting and styling
     styled_df = formatted_df.style\
