@@ -243,7 +243,7 @@ else:
     st.write("Please upload your data files")
     
     # Add email button to sidebar (when no data is uploaded)
-    st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
+    st.sidebar.markdown('<p class="sidebar-header">Outlook</p>', unsafe_allow_html=True)
     subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
     email_body = email_template.format(table_placeholder="[No data available]")
     encoded_body = quote(email_body)
