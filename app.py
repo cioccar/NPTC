@@ -42,6 +42,27 @@ st.sidebar.markdown('''
 </a>
 ''', unsafe_allow_html=True)
 
+# Add Occupancy WBR Dashboard button
+st.sidebar.markdown('''
+<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/e7c15434-94c8-40a8-aafe-15b6be3c68da" target="_blank">
+    <button style="
+        background-color: white; 
+        border: 1px solid #cccccc;
+        color: black;
+        padding: 10px 24px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+        width: 100%;
+    ">Occupancy WBR Dashboard</button>
+</a>
+''', unsafe_allow_html=True)
+
 # Data Upload section with reduced spacing
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
@@ -60,7 +81,7 @@ def process_file(file):
     })
     return df_processed
 
-# Simple email template that matches the screenshot
+# Simple le email template that matches the screenshot
 email_template = """Hello team,
 
 This email is to inform you about NPT hours that can be taken by DE associates for Seller, Brand and Vendor business units.
@@ -92,6 +113,7 @@ def format_table_for_email(df):
     
     # Add separator
     table_rows.append("-" * (len("    ".join(headers))))
+  
     
     # Add data rows
     for _, row in df.iterrows():
@@ -111,7 +133,7 @@ def format_table_for_email(df):
 
 # Process all uploaded files
 if uploaded_files:
-    all_data = pd.concat([process_file(file) for file in uploaded_files])
+    all_data = pd.concatcat([process_file(file) for file in uploaded_files])
     
     available_weeks = sorted(all_data['Week'].unique(), reverse=True)
     available_weeks = [f'Week_{week}' for week in available_weeks]
@@ -122,10 +144,10 @@ if uploaded_files:
         default=[available_weeks[0]]
     )
     
-    selected_groups = st.sidebar.multiselect(
-        'Select Staff Groups',
+    selected_gr_groups = st.sidebar.multiselect(
+        'Seleclect Staff Groups',
         all_data['Staff_Group'].unique().tolist(),
-        defaultult=all_data['Staff_Group'].unique().tolist()
+        default=all_data['Staff_Group'].unique().tolist()
     )
     
     filtered_data = all_data[
