@@ -38,7 +38,7 @@ st.sidebar.markdown('''
         border-radius: 4px;
         transition: background-color 0.3s;
         width: 100%;
-    ">Shrinkage and Occupancy Dashboard</button>
+    ">Deep Dive Dashboard</button>
 </a>
 ''', unsafe_allow_html=True)
 
