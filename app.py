@@ -64,75 +64,30 @@ def process_file(file):
     
     return df_processed
 
-# Email HTML Template
-email_html = """
-<html>
-<head>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 50%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-        .header {
-            background-color: #98CB4C;
-            color: white;
-            padding: 20px;
-            font-size: 24px;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">NPT Request</div>
-    
-    <p>Hello team,</p>
-    
-    <p>This email is to inform you about NPT hours that can be taken by DE associates for Seller, Brand and Vendor business units.</p>
-    
-    <p>This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:</p>
-    
-    <table>
-        <tr>
-            <th></th>
-            <th>Week 32</th>
-            <th>Week 33</th>
-            <th>Week 34</th>
-            <th>Week 35</th>
-        </tr>
-        <tr>
-            <td>Actual Occupancy %</td>
-            <td>67.5%</td>
-            <td>67.8%</td>
-            <td>66.2%</td>
-            <td>66.7%</td>
-        </tr>
-        <tr>
-            <td>YTD Goal %</td>
-            <td>78.5%</td>
-            <td>78.5%</td>
-            <td>78.5%</td>
-            <td>78.5%</td>
-        </tr>
-    </table>
+# Email Template
+email_template = """
+Hello team,
 
-    <p>In the table below, you have the available hours divided by weeks and Staff Groups:</p>
-    
-    <p>------------------------------------------Insert table here------------------------------------------</p>
-    
-    <p>To request NPT, you can use the River <a href="#">link</a> for NPT requests.</p>
-    
-    <p><strong>Note:</strong> Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.</p>
-    
-    <p>Thank you for your support!</p>
-    
-    <p>Best Regards,<br>
-    EMEA WFM</p>
-</body>
-</html>
+This email is to inform you about NPT hours that can be taken by DE associates for Seller, Brand and Vendor business units.
+
+This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:
+
+                    Week 32   Week 33   Week 34   Week 35
+Actual Occupancy %   67.5%     67.8%     66.2%     66.7%
+YTD Goal %           78.5%     78.5%     78.5%     78.5%
+
+In the table below, you have the available hours divided by weeks and Staff Groups:
+
+{table_placeholder}
+
+To request NPT, you can use the River link for NPT requests.
+
+Note: Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.
+
+Thank you for your support!
+
+Best Regards,
+EMEA WFM
 """
 
 # Process all uploaded files
@@ -169,14 +124,14 @@ if uploaded_files:
     # Add "Week_" prefix to the Week column before pivoting
     filtered_data['Week'] = 'Week_' + filtered_data['Week'].astype(str)
     
-    # Create pivot tables for Occupancy and Capacity Delta
+       # Create pivot tables for Occupancy and Capacity Delta
     occupancy_pivot = filtered_data.pivot(
         index='Staff_Group',
         columns='Week',
         values='Occupancy'
     )
     
-    capacity_pivot = filtered_data.pivot(
+    capacity_pivot =t = filtered_data.pivot(
         index='Staff_Group',
         columns='Week',
         values='Capacity_Delta'
@@ -214,7 +169,7 @@ if uploaded_files:
     def color_rows(row):
         avg_occupancy = row['Avg_Occupancy']
         colors = []
-        for col in row.index:
+        for col in in row.index:
             if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
                 colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
             else:
@@ -224,7 +179,7 @@ if uploaded_files:
     # Apply formatting and styling
     styled_df = formatted_df.style\
         .format({
-            'Avg_Occupancy': '{:.1f}%',
+            'Avg_Occupancancy': '{:.1f}%',
             'Avg_Capacity_Delta': '{:.1f}',
             **{col: '{:.1f}%' for col in formatted_df.columns if col not in ['Staff_Group', 'Avg_Capacity_Delta']}
         })\
@@ -236,7 +191,7 @@ if uploaded_files:
 
     # Calculate dynamic height based on number of staff groups
     row_height = 35  # height per row in pixels
-    total_height = len(selected_groups) * row_height  # removed header_height and extra row
+    total_height = len(selected_groups) * row_height  # removed header_height andand extra row
 
     # Display the styled dataframe with dynamic height
     st.dataframe(styled_df, height=total_height)
@@ -258,11 +213,26 @@ if uploaded_files:
             f"{unused_capacity:.1f} hours"
         )
 
-    # Add email button to sidebar (always available)
+    # Function to format the table for email
+    def format_table_for_email(df):
+        # Format the dataframe as a string
+        table_str = df.to_string(index=False, justify='right')
+        # Add a line of dashes under the header
+        header_width = len(table_str.split('\n')[0])
+        table_str = table_str.split('\n')
+        table_str.insert(1, '-' * header_width)
+        return '\n'.join(table_str)
+
+    # Format the table for email
+    email_table = format_table_for_email(formatted_df)
+
+    # Add email button to sidebar
     st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
-    encoded_body = quote(email_html)
+    subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
+    email_body = email_template.format(table_placeholder=email_table)
+    encoded_body = quote(email_body)
     st.sidebar.markdown(f'''
-    <a href="mailto:?subject=NPT%20Request&body={encoded_body}&type=text/html" target="_blank">
+    <a href="mailto:?subject={quote(subject)}&body={encoded_body}" target="_blank">
         <button style="
             background-color: white; 
             border: 1px solid #cccccc;
@@ -286,9 +256,11 @@ else:
 
     # Add email button to sidebar (always available, even when no data is uploaded)
     st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
-    encoded_body = quote(email_html)
+    subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
+    email_body = email_template.format(table_placeholder="[No data available]")
+    encoded_body = quote(email_body)
     st.sidebar.markdown(f'''
-    <a href="mailto:?subject=NPT%20Request&body={encoded_body}&type=text/html" target="_blank">
+    <a href="mailto:?subject={quote(subject)}&body={encoded_body}" target="_blank">
         <button style="
             background-color: white; 
             border: 1px solid #cccccc;
