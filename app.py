@@ -51,103 +51,89 @@ uploaded_files = st.sidebar.file_uploader(
 )
 
 def process_file(file):
-    # Read the file
     df = pd.read_csv(file)
-    
-    # Extract relevant columns
     df_processed = pd.DataFrame({
         'Staff_Group': df['1. STAFF GROUP'],
         'Week': df['Period by'].str.extract(r'Week (\d+)')[0],
-        'Occupancy': df['Occupancy %'] * 100,  # Convert to percentage
+        'Occupancy': df['Occupancy %'] * 100,
         'Capacity_Delta': df['Capacity Delta Hrs']
     })
-    
     return df_processed
 
-# Email Template with HTML formatting
-email_template = """
-<div style="font-family: 'Calibri', sans-serif;">
-    <div style="background-color: #90EE90; padding: 10px; text-align: center;">
-        <span style="font-size: 24px; color: white;">NPT Request</span>
-    </div>
-    <div style="border: 1px solid #ccc; padding: 20px; margin-top: 0;">
-        Hello team,<br><br>
-        
-        This email is to inform you about NPT hours that can be taken by DE associates for Seller, Brand and Vendor business units.<br><br>
-        
-        This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:<br><br>
-        
-        <table style="margin-left: 40px;">
-            <tr>
-                <td></td>
-                <td>Week 32</td>
-                <td>Week 33</td>
-                <td>Week 34</td>
-                <td>Week 35</td>
-            </tr>
-            <tr>
-                <td>Actual Occupancy %</td>
-                <td>67.5%</td>
-                <td>67.8%</td>
-                <td>66.2%</td>
-                <td>66.7%</td>
-            </tr>
-            <tr>
-                <td>YTD Goal %</td>
-                <td>78.5%</td>
-                <td>78.5%</td>
-                <td>78.5%</td>
-                <td>78.5%</td>
-            </tr>
-        </table><br>
-        
-        In the table below, you have the available hours divided by weeks and Staff Groups:<br><br>
-        
-        {table_placeholder}<br><br>
-        
-        To request NPT, you can use the River link for NPT requests.<br><br>
-        
-        Note: Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.<br><br>
-        
-        Thank you for your support!<br><br>
-        
-        Best Regards,<br>
-        EMEA WFM
-    </div>
-</div>"""
+# Simple email template that matches the screenshot
+email_template = """Hello team,
+
+This email is to inform you about NPT hours that can be taken by DE associates for Seller, Brand and Vendor business units.
+
+This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:
+
+{table_placeholder}
+
+In the table below, you have the available hours divided by weeks and Staff Groups:
+
+{table_placeholder}
+
+To request NPT, you can use the River link for NPT requests.
+
+Note: Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.
+
+Thank you for your support!
+
+Best Regards,
+EMEA WFM"""
+
+def format_table_for_email(df):
+    # Create a formatted string representation of the table
+    table_rows = []
+    
+    # Add headers
+    headers = [str(col) for col in df.columns]
+    table_rows.append("    ".join(headers))
+    
+    # Add separator
+    table_rows.append("-" * (len("    ".join(headers))))
+    
+    # Add data rows
+    for _, row in df.iterrows():
+        # Format numeric values with appropriate precision
+        formatted_row = []
+        for val in row:
+            if isinstance(val, float):
+                if val > 100:  # For capacity delta
+                    formatted_row.append(f"{val:.1f}")
+                else:  # For percentages
+                    formatted_row.append(f"{val:.1f}%")
+            else:
+                formatted_row.append(str(val))
+        table_rows.append("    ".join(formatted_row))
+    
+    return "\n".join(table_rows)
 
 # Process all uploaded files
 if uploaded_files:
-    # Combine all uploaded files
     all_data = pd.concat([process_file(file) for file in uploaded_files])
     
-    # Get available weeks and add "Week_" prefix
     available_weeks = sorted(all_data['Week'].unique(), reverse=True)
     available_weeks = [f'Week_{week}' for week in available_weeks]
     
-    # Week filter
     selected_weeks = st.sidebar.multiselect(
         'Select Weeks',
         available_weeks,
-        default=[available_weeks[0]]  # Latest week selected by default
+        default=[available_weeks[0]]
     )
     
-    # Staff Group filter
     selected_groups = st.sidebar.multiselect(
         'Select Staff Groups',
         all_data['Staff_Group'].unique().tolist(),
-        default=all_data['Staff_Group'].unique().tolist()
+        defaultult=all_data['Staff_Group'].unique().tolist()
     )
     
-    # Filter and pivot the data
     filtered_data = all_data[
         all_data['Staff_Group'].isin(selected_groups)
     ].copy()
     
-    # Add "Week_" prefix to the Week column before pivoting
     filtered_data['Week'] = 'Week_' + filtered_data['Week'].astype(str)
     
-    # Create pivot tables for Occupancy and Capacity Delta
     occupancy_pivot = filtered_data.pivot(
         index='Staff_Group',
         columns='Week',
@@ -160,31 +146,20 @@ if uploaded_files:
         values='Capacity_Delta'
     )
     
-    # Create display dataframe
     display_df = occupancy_pivot.copy()
-    
-    # Filter columns based on selected weeks
     display_df = display_df[display_df.columns.intersection(selected_weeks)]
     capacity_pivot = capacity_pivot[capacity_pivot.columns.intersection(selected_weeks)]
     
-    # Add average occupancy for selected weeks only
     display_df['Avg_Occupancy'] = display_df.mean(axis=1)
-    
-    # Add average capacity delta for selected weeks only
     display_df['Avg_Capacity_Delta'] = capacity_pivot.mean(axis=1)
-    
-    # Reset index to make Staff_Group a column
     display_df = display_df.reset_index()
     
-    # Create a copy for formatting
     formatted_df = display_df.copy()
     
-    # Ensure numeric columns are properly formatted
     numeric_cols = [col for col in formatted_df.columns if col != 'Staff_Group']
     for col in numeric_cols:
         formatted_df[col] = pd.to_numeric(formatted_df[col], errors='coerce')
 
-    # Modified color coding function
     def color_rows(row):
         avg_occupancy = row['Avg_Occupancy']
         colors = []
@@ -195,7 +170,6 @@ if uploaded_files:
                 colors.append('')
         return colors
 
-    # Apply formatting and styling
     styled_df = formatted_df.style\
         .format({
             'Avg_Occupancy': '{:.1f}%',
@@ -208,15 +182,12 @@ if uploaded_files:
             'text-align': 'center'
         })
 
-    # Calculate dynamic height based on number of staff groups
-    row_height = 35  # height per row in pixels
+    row_height = 35
     total_height = len(selected_groups) * row_height
 
-    # Display the styled dataframe with dynamic height
     st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
     st.dataframe(styled_df, height=total_height)
 
-    # Display metrics for selected weeks
     if selected_weeks:
         avg_occupancy = formatted_df[selected_weeks].mean().mean()
         unused_capacity = formatted_df[formatted_df['Avg_Occupancy'] <= 74]['Avg_Capacity_Delta'].sum()
@@ -230,18 +201,8 @@ if uploaded_files:
             f"{unused_capacity:.1f} hours"
         )
 
-    # Function to format the table for email
-    def format_table_for_email(df):
-        table_str = df.to_string(index=False, justify='right')
-        header_width = len(table_str.split('\n')[0])
-        table_str = table_str.split('\n')
-        table_str.insert(1, '-' * header_width)
-        return '\n'.join(table_str)
-
-    # Format the table for email
     email_table = format_table_for_email(formatted_df)
     
-    # Add email button to sidebar
     st.sidebar.markdown('<p class="sidebar-header">Outlook</p>', unsafe_allow_html=True)
     subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
     email_body = email_template.format(table_placeholder=email_table)
@@ -269,7 +230,6 @@ if uploaded_files:
 else:
     st.write("Please upload your data files")
     
-    # Add email button to sidebar (when no data is uploaded)
     st.sidebar.markdown('<p class="sidebar-header">Outlook</p>', unsafe_allow_html=True)
     subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
     email_body = email_template.format(table_placeholder="[No data available]")
