@@ -11,8 +11,9 @@ st.sidebar.markdown("""
     .sidebar-header {
         font-size: 16px;
         font-weight: bold;
-        margin-bottom: 0px;
+        margin-bottom: 0px;  /* Reduced from 10px to 0px */
     }
+    /* Add custom CSS to reduce space in file uploader */
     .css-1dhfmct {
         padding-top: 0px !important;
         padding-bottom: 0px !important;
@@ -63,77 +64,6 @@ def process_file(file):
     })
     
     return df_processed
-
-# Email HTML Template
-email_html = """
-<html>
-<head>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 50%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-        .header {
-            background-color: #98CB4C;
-            color: white;
-            padding: 20px;
-            font-size: 24px;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">NPT Request</div>
-    
-    <p>Hello team,</p>
-    
-    <p>This email is to inform you about NPT hours that can be taken by DE associates for Seller, Brand and Vendor business units.</p>
-    
-    <p>This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:</p>
-    
-    <table>
-        <tr>
-            <th></th>
-            <th>Week 32</th>
-            <th>Week 33</th>
-            <th>Week 34</th>
-            <th>Week 35</th>
-        </tr>
-        <tr>
-            <td>Actual Occupancy %</td>
-            <td>67.5%</td>
-            <td>67.8%</td>
-            <td>66.2%</td>
-            <td>66.7%</td>
-        </tr>
-        <tr>
-            <td>YTD Goal %</td>
-            <td>78.5%</td>
-            <td>78.5%</td>
-            <td>78.5%</td>
-            <td>78.5%</td>
-        </tr>
-    </table>
-
-    <p>In the table below, you have the available hours divided by weeks and Staff Groups:</p>
-    
-    <p>------------------------------------------Insert table here------------------------------------------</p>
-    
-    <p>To request NPT, you can use the River <a href="#">link</a> for NPT requests.</p>
-    
-    <p><strong>Note:</strong> Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.</p>
-    
-    <p>Thank you for your support!</p>
-    
-    <p>Best Regards,<br>
-    EMEA WFM</p>
-</body>
-</html>
-"""
 
 # Process all uploaded files
 if uploaded_files:
@@ -258,51 +188,38 @@ if uploaded_files:
             f"{unused_capacity:.1f} hours"
         )
 
-    # Add email button to sidebar (always available)
-    st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
-    encoded_body = quote(email_html)
-    st.sidebar.markdown(f'''
-    <a href="mailto:?subject=NPT%20Request&body={encoded_body}&type=text/html" target="_blank">
-        <button style="
-            background-color: white; 
-            border: 1px solid #cccccc;
-            color: black;
-            padding: 10px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            width: 100%;
-        ">Generate Email</button>
-    </a>
-    ''', unsafe_allow_html=True)
+        # Generate email content with current metrics
+        email_body = f"""Please find the NPT hours available report:
+
+Average Occupancy (Selected Weeks): {avg_occupancy:.1f}%
+Total Unused Capacity (Green Rows): {unused_capacity:.1f} hours
+
+Dashboard Link:
+https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/c7b9defa-5e1a-46b6-971a-dfecf4e7c45c
+"""
+        encoded_body = quote(email_body)
+        
+        # Add email button to sidebar
+        st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
+        st.sidebar.markdown(f'''
+        <a href="mailto:?subject=NPT%20Hours%20Available&body={encoded_body}" target="_blank">
+            <button style="
+                background-color: white; 
+                border: 1px solid #cccccc;
+                color: black;
+                padding: 10px 24px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+                width: 100%;
+            ">Generate Email</button>
+        </a>
+        ''', unsafe_allow_html=True)
             
 else:
     st.write("Please upload your data files")
-
-    # Add email button to sidebar (always available, even when no data is uploaded)
-    st.sidebar.markdown('<p class="sidebar-header">Generate Email</p>', unsafe_allow_html=True)
-    encoded_body = quote(email_html)
-    st.sidebar.markdown(f'''
-    <a href="mailto:?subject=NPT%20Request&body={encoded_body}&type=text/html" target="_blank">
-        <button style="
-            background-color: white; 
-            border: 1px solid #cccccc;
-            color: black;
-            padding: 10px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            width: 100%;
-        ">Generate Email</button>
-    </a>
-    ''', unsafe_allow_html=True)
