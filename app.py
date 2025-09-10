@@ -80,12 +80,12 @@ uploaded_files = st.sidebar.file_uploader(
 )
 
 def process_file(file):
-    df = pd.read_csv(file)
+    df = pd.read_csv(filfile)
     df_processed = pd.DataFrame({
         'Staff_Group': df['1. STAFF GROUP'],
         'Week': df['Period by'].str.extract(r'Week (\d+)')[0],
         'Occupancy': df['Occupancy %'] * 100,
-        'Capacity_Delta': df['f['Capacity Delta Hrs']
+        'Capacity_Delta': df['Capacity Delta Hrs']
     })
     return df_processed
 
