@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import webbrowser
 from urllib.parse import quote
 
 st.title('NPT hours available')
@@ -15,12 +16,6 @@ st.sidebar.markdown("""
     .css-1dhfmct {
         padding-top: 0px !important;
         padding-bottom: 0px !important;
-    }
-    .stSelectbox [data-baseweb="select"] {
-        max-width: 100%;
-    }
-    .stMultiSelect [data-baseweb="select"] {
-        max-width: 100%;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -73,11 +68,11 @@ st.sidebar.markdown(
 # Data Upload section with reduced spacing
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
-r(
     "From the above dashboard",
     accept_multiple_files=True,
     type=['csv']
 )
+
 def process_file(file):
     df = pd.read_csv(file)
     df_processed = pd.DataFrame({
@@ -134,7 +129,7 @@ def format_table_for_email(df):
                 else:  # For percentages
                     formatted_row.append(f"{val:.1f}%")
             else:
-                   formatted_row.append(str(val))
+                formatted_row.append(str(val))
         table_rows.append("    ".join(formatted_row))
     
     return "\n".join(table_rows)
@@ -149,20 +144,13 @@ if uploaded_files:
     selected_weeks = st.sidebar.multiselect(
         'Select Weeks',
         available_weeks,
-        defdefault=[available_weeks[0]]
+        default=[available_weeks[0]]
     )
     
     selected_groups = st.sidebar.multiselect(
         'Select Staff Groups',
-        all_data['Staff_GroGroup'].unique().tolist(),
+        all_data['Staff_Group'].unique().tolist(),
         default=all_data['Staff_Group'].unique().tolist()
-    )
-    
-    # New filter for Available/Unavailable staff groups
-    availability_filter = st.sidebar.multiselect(
-        'Available',
-        ['Available', 'Unavailable'],
-        default=['Available', 'Unavailable']
     )
     
     filtered_data = all_data[
@@ -200,7 +188,6 @@ if uploaded_files:
     def color_rows(row):
         avg_occupancy = row['Avg_Occupancy']
         colors = []
- )
         for col in row.index:
             if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
                 colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
@@ -220,16 +207,8 @@ if uploaded_files:
             'text-align': 'center'
         })
 
-    # Filter based on availability
-    if 'Available' in availability_filter and 'Unavailable' not in availability_filter:
-        styled_df = styled_df.data[styled_df.data['Avg_Occupancy'] <= 74]
-    elif 'Unavailable' in availability_filter and 'Available' not in availability_filter:
-        styled_df = styled_df.data[styled_df.data['Avg_Occupancy'] > 74]
-    else:
-        styled_df = styled_df.data
-    
     row_height = 35
-    total_height = len(styled_df) * row_height
+    total_height = len(selected_groups) * row_height
 
     st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
     st.dataframe(styled_df, height=total_height)
