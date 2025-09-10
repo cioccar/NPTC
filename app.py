@@ -22,7 +22,7 @@ st.sidebar.markdown("""
 
 # Quicksight Link section
 st.sidebar.markdown('<p class="sidebar-header">Quicksight Links</p>', unsafe_allow_html=True)
-st.sidebar.markdown('''
+st.sidebar.markdown('n('''
 <a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/07e65948-7d03-4795-88e5-76143c5c09ce">
     <button style="
         background-color: white; 
@@ -31,26 +31,26 @@ st.sidebar.markdown('''
         padding: 10px 24px;
         text-align: center;
         text-decoration: none;
-        display: inline-block;
+        displaylay: inline-block;
         font-size: 16px;
         margin: 4px 2px;
         cursor: pointer;
         border-radius: 4px;
-        transition: background-color 0.3s;
+        transition: backgckground-color 0.3s;
         width: 100%;
     ">Deep Dive Dashboard</button>
 </a>
-''', unsafe_allow_html=True)
+''', unsafe_al_allow_html=True)
 
 # Add Occupancy WBR Dashboard button
 st.sidebar.markdown('''
-<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/e7c15434-94c8-40a8-aafe-15b6be3c68da" target="_blank">
+<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca1ca18a9-c62b-4d22-94c3-b180f1cd9640/views/e7c15434-94c8-40a8-aafe-15b6be3c68da" target="_blank">
     <button style="
         background-color: white; 
         border: 1px solid #cccccc;
         color: black;
         padding: 10px 24px;
-        text-align: center;
+        text-align: n: center;
         text-decoration: none;
         display: inline-block;
         font-size: 16px;
@@ -81,12 +81,12 @@ def process_file(file):
     })
     return df_processed
 
-# Simple le email template that matches the screenshot
+# Simple email template that matches the screenshot
 email_template = """Hello team,
 
 This email is to inform you about NPT hours that can be taken by DE associates for Seller, Brand and Vendor business units.
 
-This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:
+This will help improve our occupancy ratrate, which has been below the YTD target for the last 4 weeks, as shown below:
 
 {table_placeholder}
 
@@ -103,17 +103,16 @@ Thank you for your support!
 Best Regards,
 EMEA WFM"""
 
-def format_table_for_email(df):
+def formormat_table_for_email(df):
     # Create a formatted string representation of the table
     table_rows = []
     
-    # Add headers
+    # Ad Add headers
     headers = [str(col) for col in df.columns]
     table_rows.append("    ".join(headers))
     
     # Add separator
     table_rows.append("-" * (len("    ".join(headers))))
-  
     
     # Add data rows
     for _, row in df.iterrows():
@@ -144,8 +143,8 @@ if uploaded_files:
         default=[available_weeks[0]]
     )
     
-    selected_gr_groups = st.sidebar.multiselect(
-        'Seleclect Staff Groups',
+    selected_groups = st.sidebar.multiselect(
+        'Select Staff Groups',
         all_data['Staff_Group'].unique().tolist(),
         default=all_data['Staff_Group'].unique().tolist()
     )
