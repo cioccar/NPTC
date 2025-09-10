@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import webbrowser
 from urllib.parse import quote
 
 st.title('NPT hours available')
@@ -49,14 +48,14 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-# Add Od Occupancy WBR Dashboard button
+# Add Occupancy WBR Dashboard button
 st.sidebar.markdown(
-    '<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/e7c15434-94c8-40a8-aafe-15b6be3c68da" target="_blank">'
+    '<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/e7c15434-94c8-40-40a8-aafe-15b6be3c68da" target="_blank">'
     '<button style="'
     'background-color: white;'
     'border: 1px solid #cccccc;'
     'color: black;'
-    'padding: 10px 24px;'
+    'padding: 10px 24px;'x;'
     'text-align: center;'
     'text-decoration: none;'
     'display: inline-block;'
@@ -74,13 +73,14 @@ st.sidebar.markdown(
 # Data Upload section with reduced spacing
 st.sidebar.markdown('<p class="sidebar-header">Data Upload</p>', unsafe_allow_html=True)
 uploaded_files = st.sidebar.file_uploader(
+r(
     "From the above dashboard",
     accept_multiple_files=True,
     type=['csv']
 )
 
 def process_file(file):
-    df = pd.read_csv(filfile)
+    df = pd.read_csv(file)
     df_processed = pd.DataFrame({
         'Staff_Group': df['1. STAFF GROUP'],
         'Week': df['Period by'].str.extract(r'Week (\d+)')[0],
@@ -104,7 +104,7 @@ In the table below, you have the available hours divided by weeks and Staff Grou
 
 {table_placeholder}
 
-To request NPTNPT, you can use the River link for NPT requests.
+To request NPT, you can use the River link for NPT requests.
 
 Note: Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.
 
@@ -135,28 +135,29 @@ def format_table_for_email(df):
                 else:  # For percentages
                     formatted_row.append(f"{val:.1f}%")
             else:
-                formatted_row.append(str(val))
+                   formatted_row.append(str(val))
         table_rows.append("    ".join(formatted_row))
     
     return "\n".join(table_rows)
+
 # Process all uploaded files
 if uploaded_files:
     all_data = pd.concat([process_file(file) for file in uploaded_files])
     
-    available_weeks = sorted(all_data['WeeWeek'].unique(), reverse=True)
+    available_weeks = sorted(all_data['Week'].unique(), reverse=True)
     available_weeks = [f'Week_{week}' for week in available_weeks]
     
     selected_weeks = st.sidebar.multiselect(
         'Select Weeks',
         available_weeks,
-        default=[available_weeks[0]]
+        defdefault=[available_weeks[0]]
     )
     
-selected_groups = st.sidebar.multiselect(
-    'Select Staff Groups',
-    all_data['Staff_Group'].unique().tolist(),
-    default=all_data['Staff_Group'].unique().tolist()
-)
+    selected_groups = st.sidebar.multiselect(
+        'Select Staff Groups',
+        all_data['Staff_GroGroup'].unique().tolist(),
+        default=all_data['Staff_Group'].unique().tolist()
+    )
     
     # New filter for Available/Unavailable staff groups
     availability_filter = st.sidebar.multiselect(
@@ -200,6 +201,7 @@ selected_groups = st.sidebar.multiselect(
     def color_rows(row):
         avg_occupancy = row['Avg_Occupancy']
         colors = []
+ ]
         for col in row.index:
             if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
                 colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
