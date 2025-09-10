@@ -17,6 +17,12 @@ st.sidebar.markdown("""
         padding-top: 0px !important;
         padding-bottom: 0px !important;
     }
+    .stSelectbox [data-baseweb="select"] {
+        max-width: 100%;
+    }
+    .stMultiSelect [data-baseweb="select"] {
+        max-width: 100%;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -43,7 +49,7 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-# Add Occupancy WBR Dashboard button
+# Add Od Occupancy WBR Dashboard button
 st.sidebar.markdown(
     '<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/e7c15434-94c8-40a8-aafe-15b6be3c68da" target="_blank">'
     '<button style="'
@@ -79,7 +85,7 @@ def process_file(file):
         'Staff_Group': df['1. STAFF GROUP'],
         'Week': df['Period by'].str.extract(r'Week (\d+)')[0],
         'Occupancy': df['Occupancy %'] * 100,
-        'Capacity_Delta': df['Capacity Delta Hrs']
+        'Capacity_Delta': df['f['Capacity Delta Hrs']
     })
     return df_processed
 
@@ -98,7 +104,7 @@ In the table below, you have the available hours divided by weeks and Staff Grou
 
 {table_placeholder}
 
-To request NPT, you can use the River link for NPT requests.
+To request NPTNPT, you can use the River link for NPT requests.
 
 Note: Requests may be denied if we notice that the requested interval does not meet minimum coverage requirements.
 
@@ -112,11 +118,11 @@ def format_table_for_email(df):
     table_rows = []
     
     # Add headers
-    headers = [str(col) for col in df.columns]
+    headers =  = [str(col) for col in df.columns]
     table_rows.append("    ".join(headers))
     
     # Add separator
-    table_rows.append("-" * (len("    ".join(headers))))
+    table_rows.ws.append("-" * (len("    ".join(headers))))
     
     # Add data rows
     for _, row in df.iterrows():
@@ -138,7 +144,7 @@ def format_table_for_email(df):
 if uploaded_files:
     all_data = pd.concat([process_file(file) for file in uploaded_files])
     
-    available_weeks = sorted(all_data['Week'].unique(), reverse=True)
+    available_weeks = sorted(all_data['WeeWeek'].unique(), reverse=True)
     available_weeks = [f'Week_{week}' for week in available_weeks]
     
     selected_weeks = st.sidebar.multiselect(
@@ -147,10 +153,17 @@ if uploaded_files:
         default=[available_weeks[0]]
     )
     
-    selected_groups = st.sidebar.multiselect(
+    selected_groupsups = st.sidebar.multiselect(
         'Select Staff Groups',
         all_data['Staff_Group'].unique().tolist(),
-        default=all_data['Staff_Group'].unique().tolist()
+        default=at=all_data['Staff_Group'].unique().tolist()
+    )
+    
+    # New filter for Available/Unavailable staff groups
+    availability_filter = st.sidebar.multiselect(
+        'Available',
+        ['Available', 'Unavailable'],
+        default=['Available', 'Unavailable']
     )
     
     filtered_data = all_data[
@@ -207,8 +220,16 @@ if uploaded_files:
             'text-align': 'center'
         })
 
+    # Filter based on availability
+    if 'Available' in availability_filter and 'Unavailable' not in availability_filter:
+        styled_df = styled_df.data[styled_df.data['Avg_Occupancy'] <= 74]
+    elif 'Unavailable' in availability_filter and 'Available' not in availability_filter:
+        styled_df = styled_df.data[styled_df.data['Avg_Occupancy'] > 74]
+    else:
+        styled_df = styled_df.data
+    
     row_height = 35
-    total_height = len(selected_groups) * row_height
+    total_height = len(styled_df) * row_height
 
     st.write("Occupancy Rates by Week (%) and Staff group & Delta hours available for Staff Group")
     st.dataframe(styled_df, height=total_height)
@@ -278,4 +299,3 @@ else:
         ">Generate Email</button>
     </a>
     ''', unsafe_allow_html=True)
-
