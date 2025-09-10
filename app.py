@@ -17,40 +17,29 @@ st.sidebar.markdown("""
         padding-top: 0px !important;
         padding-bottom: 0px !important;
     }
-    .stMultiSelect [data-baseweb="tag"] {
-        max-width: 100% !important;
-        white-space: normal;
-        word-break: break-word;
-    }
-    .stMultiSelect [data-baseweb="tag"] span {
-        white-space: normal;
-    }
 </style>
 """, unsafe_allow_html=True)
 
 # Quicksight Link section
-st.sidebar.markdown('<p class="sidebar-header">Quicksight Links</p>', unsafe_allow_html=True) 
+st.sidebar.markdown('<p class="sidebar-header">Quicksight Links</p>', unsafe_allow_html=True)
 st.sidebar.markdown(
-    f'''
-    <a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/07e65948-7d03-4795-88e5-76143c5c09ce">
-        <button style="
-            background-color: white;
-            border: 1px solid #cccccc;
-            color: black;
-            padding: 10px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            width: 100%;">
-            Deep Dive Dashboard
-        </button>
-    </a>
-    ''',
+    '<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/07e65948-7d03-4795-88e5-76143c5c09ce">'
+    '<button style="'
+    'background-color: white;'
+    'border: 1px solid #cccccc;'
+    'color: black;'
+    'padding: 10px 24px;'
+    'text-align: center;'
+    'text-decoration: none;'
+    'display: inline-block;'
+    'font-size: 16px;'
+    'margin: 4px 2px;'
+    'cursor: pointer;'
+    'border-radius: 4px;'
+    'transition: background-color 0.3s;'
+    'width: 100%;">'
+    'Deep Dive Dashboard</button>'
+    '</a>',
     unsafe_allow_html=True
 )
 
@@ -101,7 +90,7 @@ This email is to inform you about NPT hours that can be taken by DE associates f
 
 This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:
 
-                   Week 32   Week 33   Week 34   Week 35
+                Week 32   Week 33   Week 34   Week 35
 Actual Occupancy %   67.5%     67.8%     66.2%     66.7%
 YTD Goal %          78.5%     78.5%     78.5%     78.5%
 
@@ -138,7 +127,7 @@ def format_table_for_email(df):
                 if val > 100:  # For capacity delta
                     formatted_row.append(f"{val:.1f}")
                 else:  # For percentages
-                    formatted_row.append(f"{val:.1:.1f}%")
+                    formatted_row.append(f"{val:.1f}%")
             else:
                 formatted_row.append(str(val))
         table_rows.append("    ".join(formatted_row))
@@ -158,11 +147,10 @@ if uploaded_files:
         default=[available_weeks[0]]
     )
     
-    selected_groupsups = st.sidebar.multiselect(
+    selected_groups = st.sidebar.multiselect(
         'Select Staff Groups',
         all_data['Staff_Group'].unique().tolist(),
-        default=all_data['Staff_Group'].unique().tolist(),
-        format_func=lambda x: x  # This ensures the full text is displayed
+        default=all_data['Staff_Group'].unique().tolist()
     )
     
     filtered_data = all_data[
