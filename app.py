@@ -81,7 +81,7 @@ r(
 def process_file(file):
     df = pd.read_csv(file)
     df_processed = pd.DataFrame({
-        'Staff_GroGroup': df['1. STAFF GROUP'],
+        'Staff_Group': df['1. STAFF GROUP'],
         'Week': df['Period by'].str.extract(r'Week (\d+)')[0],
         'Occupancy': df['Occupancy %'] * 100,
         'Capacity_Delta': df['Capacity Delta Hrs']
