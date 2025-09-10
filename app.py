@@ -40,7 +40,7 @@ st.sidebar.markdown(
     'text-align: center;'
     'text-decoration: none;'
     'display: inline-block;'
-    'font-size: 16px;'
+    '  'font-size: 16px;'
     'margin: 4px 2px;'
     'cursor: pointer;'
     'border-radius: 4px;'
@@ -48,7 +48,7 @@ st.sidebar.markdown(
     'width: 100%;">'
     'Deep Dive Dashboard</button>'
     '</a>',
-    unsafsafe_allow_html=True
+    unsafe_allow_html=True
 )
 
 # Add Occupancy WBR Dashboard button
