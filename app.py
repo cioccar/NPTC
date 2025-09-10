@@ -52,7 +52,7 @@ st.sidebar.markdown(
 st.sidebar.markdown(
     '<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/e7c15434-94c8-40a8-aafe-15b6be3c68da" target="_blank">'
     '<button style="'
-    'b 'background-color: white;'
+    'background-color: white;'
     'border: 1px solid #cccccc;'
     'color: black;'
     'padding: 10px 24px;'
