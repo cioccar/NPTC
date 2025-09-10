@@ -278,3 +278,4 @@ else:
         ">Generate Email</button>
     </a>
     ''', unsafe_allow_html=True)
+
