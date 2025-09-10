@@ -201,7 +201,7 @@ if uploaded_files:
     def color_rows(row):
         avg_occupancy = row['Avg_Occupancy']
         colors = []
- ]
+ )
         for col in row.index:
             if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
                 colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
