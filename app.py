@@ -152,11 +152,11 @@ if uploaded_files:
         default=[available_weeks[0]]
     )
     
-    selected_groupsups = st.sidebar.multiselect(
-        'Select Staff Groups',
-        all_data['Staff_Group'].unique().tolist(),
-        default=at=all_data['Staff_Group'].unique().tolist()
-    )
+selected_groups = st.sidebar.multiselect(
+    'Select Staff Groups',
+    all_data['Staff_Group'].unique().tolist(),
+    default=all_data['Staff_Group'].unique().tolist()
+)
     
     # New filter for Available/Unavailable staff groups
     availability_filter = st.sidebar.multiselect(
