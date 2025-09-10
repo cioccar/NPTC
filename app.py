@@ -133,7 +133,7 @@ def format_table_for_email(df):
 
 # Process all uploaded files
 if uploaded_files:
-all_data = pd.concat([process_file(file) for file in uploaded_files])
+    all_data = pd.concat([process_file(file) for file in uploaded_files])
     
     available_weeks = sorted(all_data['Week'].unique(), reverse=True)
     available_weeks = [f'Week_{week}' for week in available_weeks]
