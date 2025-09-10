@@ -17,6 +17,14 @@ st.sidebar.markdown("""
         padding-top: 0px !important;
         padding-bottom: 0px !important;
     }
+    .stMultiSelect [data-baseweb="tag"] {
+        max-width: 100% !important;
+        white-space: normal;
+        word-break: break-word;
+    }
+    .stMultiSelect [data-baseweb="tag"] span {
+        white-space: normal;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -40,7 +48,7 @@ st.sidebar.markdown(
     'width: 100%;">'
     'Deep Dive Dashboard</button>'
     '</a>',
-    unsafe_allow_html=True
+    unsafsafe_allow_html=True
 )
 
 # Add Occupancy WBR Dashboard button
@@ -90,7 +98,7 @@ This email is to inform you about NPT hours that can be taken by DE associates f
 
 This will help improve our occupancy rate, which has been below the YTD target for the last 4 weeks, as shown below:
 
-                Week 32   Week 33   Week 34   Week 35
+                   Week 32   Week 33   Week 34   Week 35
 Actual Occupancy %   67.5%     67.8%     66.2%     66.7%
 YTD Goal %          78.5%     78.5%     78.5%     78.5%
 
@@ -127,7 +135,7 @@ def format_table_for_email(df):
                 if val > 100:  # For capacity delta
                     formatted_row.append(f"{val:.1f}")
                 else:  # For percentages
-                    formatted_row.append(f"{val:.1f}%")
+                    formatted_row.append(f"{val:.1:.1f}%")
             else:
                 formatted_row.append(str(val))
         table_rows.append("    ".join(formatted_row))
@@ -147,10 +155,11 @@ if uploaded_files:
         default=[available_weeks[0]]
     )
     
-    selected_groups = st.sidebar.multiselect(
+    selected_groupsups = st.sidebar.multiselect(
         'Select Staff Groups',
         all_data['Staff_Group'].unique().tolist(),
-        default=all_data['Staff_Group'].unique().tolist()
+        default=all_data['Staff_Group'].unique().tolist(),
+        format_func=lambda x: x  # This ensures the full text is displayed
     )
     
     filtered_data = all_data[
