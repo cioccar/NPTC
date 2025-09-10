@@ -118,11 +118,11 @@ def format_table_for_email(df):
     table_rows = []
     
     # Add headers
-    headers =  = [str(col) for col in df.columns]
+    headers = [str(col) for col in df.columns]
     table_rows.append("    ".join(headers))
     
     # Add separator
-    table_rows.ws.append("-" * (len("    ".join(headers))))
+    table_rows.append("-" * (len("    ".join(headers))))
     
     # Add data rows
     for _, row in df.iterrows():
@@ -139,7 +139,6 @@ def format_table_for_email(df):
         table_rows.append("    ".join(formatted_row))
     
     return "\n".join(table_rows)
-
 # Process all uploaded files
 if uploaded_files:
     all_data = pd.concat([process_file(file) for file in uploaded_files])
