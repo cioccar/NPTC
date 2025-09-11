@@ -87,23 +87,33 @@ def calculate_trend_capacity(row):
     weeks = range(1, len(row) + 1)
     values = row.values
     
-    print(f"Debug - Weeks: {list(weeks)}")
-    print(f"Debug - Values: {list(values)}")
+    print("\nDEBUG DETTAGLIATO:")
+    print(f"1. Numero di settimane: {len(weeks)}")
+    print(f"2. Settimane: {list(weeks)}")
+    print(f"3. Valori per settimana: {list(values)}")
     
     if len(weeks) < 2:
         return values[0]
     
-    slope = (len(weeks) * sum(x*y for x, y in zip(weeks, values)) - sum(weeks)*sum(values)) / \
-            (len(weeks) * sum(x*x for x in weeks) - sum(weeks)**2)
+    # Calcolo slope
+    numerator = len(weeks) * sum(x*y for x, y in zip(weeks, values)) - sum(weeks)*sum(values)
+    denominator = len(weeks) * sum(x*x for x in weeks) - sum(weeks)**2
+    slope = numerator / denominator
     
+    print(f"4. Calcolo slope:")
+    print(f"   - Numeumeratore: {numerator}")
+    print(f"   - Denominatore: {denominator}")
+    print(f"   - Slope: {slope}")
+    
+    # Calcolo intercept
     intercept = (sum(values) - slope * sum(weeks)) / len(weeks)
+    print(f"5. Intercept: {intercept}")
     
+    # Calcolo previsione
     next_week = len(weeks) + 1
     predicted_value = slope * next_week + intercept
-    
-    print(f"Debug - Slope: {slope}")
-    print(f"Debug - Intercept: {intercept}")
-    print(f"Debug - Predicted Value: {predicted_value}")
+    print(f"6. Settimana successiva: {next_week}")
+    print(f"7. Valore previsto: {predicted_value}")
     
     return predicted_value
 
