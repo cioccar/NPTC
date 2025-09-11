@@ -87,33 +87,16 @@ def calculate_trend_capacity(row):
     weeks = range(1, len(row) + 1)
     values = row.values
     
-    st.write("\nDEBUG DETTAGLIATO:")
-    st.write(f"1. Numero di settimane: {len(weeks)}")
-    st.write(f"2. Settimane: {list(weeks)}")
-    st.write(f"3. Valori per settimana: {list(values)}")
-    
     if len(weeks) < 2:
         return values[0]
     
-    # Calcolo slope
-    numerator = len(weeks) * sum(x*y for x, y in zip(weeks, values)) - sum(weeks)*sum(values)
-    denominator = len(weeks) * sum(x*x for x in weeks) - sum(weeks)**2
-    slope = numerator / denominator
+    slope = (len(weeks) * sum(x*y for x, y in zip(weeks, values)) - sum(weeks)*sum(values)) / \
+            (len(weeks) * sum(x*x for x in weeks) - sum(weeks)**2)
     
-    st.write(f"4. Calcolo slope:")
-    st.write(f"   - Numeratore: {numerator}")
-    st.write(f"   - Denominatore: {denominator}")
-    st.write(f"   - Slope: {slope}")
-    
-    # Calcolo intercept
     intercept = (sum(values) - slope * sum(weeks)) / len(weeks)
-    st.write(f"5. Intercept: {intercept}")
     
-    # Calcolo previsione
     next_week = len(weeks) + 1
     predicted_value = slope * next_week + intercept
-    st.write(f"6. Settimana successiva: {next_week}")
-    st.write(f"7. Valore previsto: {predicted_value}")
     
     return predicted_value
 
@@ -206,9 +189,6 @@ if uploaded_files:
         values='Capacity_Delta'
     )
     
-    print("Debug - Capacity Pivot:")
-    print(capacity_pivot)
-    
     display_df = occupancy_pivot.copy()
     display_df = display_df[display_df.columns.intersection(selected_weeks)]
     capacity_pivot = capacity_pivot[capacity_pivot.columns.intersection(selected_weeks)]
@@ -216,9 +196,6 @@ if uploaded_files:
     display_df['Avg_Occupancy'] = display_df.mean(axis=1)
     display_df['Available NPT hours'] = capacity_pivot.apply(calculate_trend_capacity, axis=1)
     display_df = display_df.reset_index()
-    
-    print("Debug - Display DataFrame:")
-    print(display_df)
     
     formatted_df = display_df.copy()
     
