@@ -244,7 +244,7 @@ if uploaded_files:
             f"{unused_capacity:.1f} hours"
         )
 
-    email_table = format_table_for_email(fo(formatted_df)
+    email_table = format_table_for_email(formatted_df)
     
     st.sidebar.markdown('<p class="sidebar-header">Outlook</p>', unsafe_allow_html=True)
     subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
