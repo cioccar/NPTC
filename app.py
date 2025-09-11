@@ -87,6 +87,9 @@ def calculate_trend_capacity(row):
     weeks = range(1, len(row) + 1)
     values = row.values
     
+    print(f"Debug - Weeks: {list(weeks)}")
+    print(f"Debug - Values: {list(values)}")
+    
     if len(weeks) < 2:
         return values[0]
     
@@ -95,13 +98,13 @@ def calculate_trend_capacity(row):
     
     intercept = (sum(values) - slope * sum(weeks)) / len(weeks)
     
+    print(f"Debug - Slope: {slope}")
+    print(f"Debug - Intercept: {intercept}")
+    
     next_week = len(weeks) + 1
     predicted_value = slope * next_week + intercept
     
-    print(f"Debug - Weeks: {weeks}")
-    print(f"Debug - Values: {values}")
-    print(f"Debug - Slope: {slope}")
-    print(f"Debug - Intercept: {intercept}")
+    print(f"Debug - Next Week: {next_week}")
     print(f"Debug - Predicted Value: {predicted_value}")
     
     return predicted_value
