@@ -8,19 +8,21 @@ st.title('NPT hours available')
 # Instructions section in sidebar
 st.sidebar.markdown('<p class="sidebar-header">Instructions</p>', unsafe_allow_html=True)
 instructions = """
-1. Check the Occupancy rate from 'Occupancy WBR Dashboard' button
+1. Check the Occupancy rate from Occupancy WBR Dashboard button
 
 2. If the Occupancy is below the target continue to 3) otherwise stop
 
 3. Click on 'Deep dive section' button
 
-4. Select the Store, SGs and Date desidered
+4. Select the Store, SGs and Date
 
-5. Download in .csv and drag the .csv file in the related 'Data Upload' section
+5. Download in .csv
 
-6. Export from the central tab the 'Available NPT hours'
+6. Drag the .csv file in the related section
 
-7. Click on Generate Email and informing OPS about the Available NPT hours for the next week divided by Staff Group.
+7. Export from the central tab the 'Available NPT hours'
+
+8. Click on Generate Email and informing OPS about the Available NPT hours for the next week divided by Staff Group
 """
 st.sidebar.markdown(instructions)
 
@@ -42,8 +44,32 @@ st.sidebar.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Quicksight Link section
+# Quicksight Link section (invertito)
 st.sidebar.markdown('<p class="sidebar-header">Quicksight Links</p>', unsafe_allow_html=True)
+
+# Occupancy WBR Dashboard button (ora primo)
+st.sidebar.markdown(
+    '<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/e7c15434-94c8-40a8-aafe-15b6be3c68da" target="_blank">'
+    '<button style="'
+    'background-color: white;'
+    'border: 1px solid #cccccc;'
+    'color: black;'
+    'padding: 10p10px 24px;'
+    'text-align: center;'
+    'text-decoration: none;'
+    'display: inline-block;'
+    'font-size: 16px;'
+    'margin: 4px 2px;'
+    'cursor: pointer;'
+    'border-radius: 4px;'
+    'transition: background-color 0.3s;'
+    'width: 100%;">'
+    'Occupancy WBR Dashboard</button>'
+    '</a>',
+    unsafe_allow_html=True
+)
+
+# Deep Dive Dashboard button (ora secondo)
 st.sidebar.markdown(
     '<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/07e65948-7d03-4795-88e5-76143c5c09ce">'
     '<button style="'
@@ -61,28 +87,6 @@ st.sidebar.markdown(
     'transition: background-color 0.3s;'
     'width: 100%;">'
     'Deep Dive Dashboard</button>'
-    '</a>',
-    unsafe_allow_html=True
-)
-
-# Add Occupancy WBR Dashboard button
-st.sidebar.markdown(
-    '<a href="https://us-east-1.quicksight.aws.amazon.com/sn/account/187419755406_SPS/dashboards/19ca18a9-c62b-4d22-94c3-b180f1cd9640/views/e7c15434-94c8-40a8-aafe-15b6be3c68da" target="_blank">'
-    '<button style="'
-    'background-color: white;'
-    'border: 1px solid #cccccc;'
-    'color: black;'
-    'padding: 10px 24px;'
-    'text-align: center;'
-    'text-decoration: none;'
-    'display: inline-block;'
-    'font-size: 16px;'
-    'margin: 4px 2px;'
-    'cursor: pointer;'
-    'border-radius: 4px;'
-    'transition: background-color 0.3s;'
-    'width: 100%;">'
-    'Occupancy WBR Dashboard</button>'
     '</a>',
     unsafe_allow_html=True
 )
@@ -227,7 +231,7 @@ if uploaded_files:
     
     numeric_cols = [col for col in formatted_df.columns if col != 'Staff_Group']
     for col in numeric_cols:
-        formatted_df[col] = pd.to_numeric(formattatted_df[col], errors='coerce')
+        formatted_df[col] = pd.to_numeric(formatted_df[col], errors='coerce')
 
     def color_rows(row):
         avg_occupancy = row['Avg_Occupancy']
