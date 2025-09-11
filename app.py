@@ -194,7 +194,7 @@ if uploaded_files:
     capacity_pivot = capacity_pivot[capacity_pivot.columns.intersection(selected_weeks)]
     
     display_df['Avg_Occupancy'] = display_df.mean(axis=1)
-    display_df['Avg_Capacity_Delta'] = capacity_pivot.apply(calculate_trend_capacity, axis=1)
+    display_df['Available NPT hours'] = capacity_pivot.apply(calculate_trend_capacity, axis=1)
     display_df = display_df.reset_index()
     
     formatted_df = display_df.copy()
@@ -207,7 +207,7 @@ if uploaded_files:
         avg_occupancy = row['Avg_Occupancy']
         colors = []
         for col in row.index:
-            if col in ['Staff_Group', 'Avg_Occupancy', 'Avg_Capacity_Delta']:
+            if col in ['Staff_Group', 'Avg_Occupancy', 'Available NPT hours']:
                 colors.append('background-color: #ffcccb' if avg_occupancy > 74 else 'background-color: #90EE90')
             else:
                 colors.append('')
@@ -216,8 +216,8 @@ if uploaded_files:
     styled_df = formatted_df.style\
         .format({
             'Avg_Occupancy': '{:.1f}%',
-            'Avg_Capacity_Delta': '{:.1f}',
-            **{col: '{:.1f}%' for col in formatted_df.columns if col not in ['Staff_Group', 'Avg_Capacity_Delta']}
+            'Available NPT hours': '{:.1f}',
+            **{col: '{:.1f}%' for col in formatted_df.columns if col not in ['Staff_Group', 'Available NPT hours']}
         })\
         .apply(color_rows, axis=1)\
         .set_properties(**{
@@ -233,7 +233,7 @@ if uploaded_files:
 
     if selected_weeks:
         avg_occupancy = formatted_df[selected_weeks].mean().mean()
-        unused_capacity = formatted_df[formatted_df['Avg_Occupancy'] <= 74]['Avg_Capacity_Delta'].sum()
+        unused_capacity = formatted_df[formatted_df['Avg_Occupancy'] <= 74]['Available NPT hours'].sum()
         
         st.metric(
             f"Average Occupancy (Selected Weeks)", 
@@ -244,7 +244,7 @@ if uploaded_files:
             f"{unused_capacity:.1f} hours"
         )
 
-    email_table = format_table_for_email(formatted_df)
+    email_table = format_table_for_email(fo(formatted_df)
     
     st.sidebar.markdown('<p class="sidebar-header">Outlook</p>', unsafe_allow_html=True)
     subject = "NPT hours for DE Seller, Brand and Vendor | WKXX"
