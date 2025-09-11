@@ -83,6 +83,24 @@ def process_file(file):
     })
     return df_processed
 
+def calculate_trend_capacity(row):
+    weeks = range(1, len(row) + 1)
+    values = row.values
+    if len(weeks) < 2:  # Se abbiamo solo una settimana, restituiamo quel valore
+        return values[0]
+    
+    # Calcola slope e intercept
+    slope = (len(weeks) * sum(x*y for x, y in zip(weeks, values)) - sum(weeks)*sum(values)) / \
+            (len(weeks) * sum(x*x for x in weeks) - sum(weeks)**2)
+    
+    intercept = (sum(values) - slope * sum(weeks)) / len(weeks)
+    
+    # Calcola il valore previsto per la settimana successiva
+    next_week = len(weeks) + 1
+    predicted_value = slope * next_week + intercept
+    
+    return predicted_value
+
 # Simple email template that matches the screenshot
 email_template = """Hello team,
 
@@ -176,7 +194,7 @@ if uploaded_files:
     capacity_pivot = capacity_pivot[capacity_pivot.columns.intersection(selected_weeks)]
     
     display_df['Avg_Occupancy'] = display_df.mean(axis=1)
-    display_df['Avg_Capacity_Delta'] = capacity_pivot.mean(axis=1)
+    display_df['Avg_Capacity_Delta'] = capacity_pivot.apply(calculate_trend_capacity, axis=1)
     display_df = display_df.reset_index()
     
     formatted_df = display_df.copy()
