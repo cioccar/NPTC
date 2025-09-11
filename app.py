@@ -87,6 +87,9 @@ def calculate_trend_capacity(row):
     weeks = range(1, len(row) + 1)
     values = row.values
     
+    print(f"Debug - Weeks: {list(weeks)}")
+    print(f"Debug - Values: {list(values)}")
+    
     if len(weeks) < 2:
         return values[0]
     
@@ -97,6 +100,10 @@ def calculate_trend_capacity(row):
     
     next_week = len(weeks) + 1
     predicted_value = slope * next_week + intercept
+    
+    print(f"Debug - Slope: {slope}")
+    print(f"Debug - Intercept: {intercept}")
+    print(f"Debug - Predicted Value: {predicted_value}")
     
     return predicted_value
 
@@ -189,6 +196,9 @@ if uploaded_files:
         values='Capacity_Delta'
     )
     
+    print("Debug - Capacity Pivot:")
+    print(capacity_pivot)
+    
     display_df = occupancy_pivot.copy()
     display_df = display_df[display_df.columns.intersection(selected_weeks)]
     capacity_pivot = capacity_pivot[capacity_pivot.columns.intersection(selected_weeks)]
@@ -196,6 +206,9 @@ if uploaded_files:
     display_df['Avg_Occupancy'] = display_df.mean(axis=1)
     display_df['Available NPT hours'] = capacity_pivot.apply(calculate_trend_capacity, axis=1)
     display_df = display_df.reset_index()
+    
+    print("Debug - Display DataFrame:")
+    print(display_df)
     
     formatted_df = display_df.copy()
     
