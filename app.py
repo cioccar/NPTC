@@ -87,9 +87,6 @@ def calculate_trend_capacity(row):
     weeks = range(1, len(row) + 1)
     values = row.values
     
-    print(f"Debug - Weeks: {list(weeks)}")
-    print(f"Debug - Values: {list(values)}")
-    
     if len(weeks) < 2:
         return values[0]
     
@@ -98,14 +95,8 @@ def calculate_trend_capacity(row):
     
     intercept = (sum(values) - slope * sum(weeks)) / len(weeks)
     
-    print(f"Debug - Slope: {slope}")
-    print(f"Debug - Intercept: {intercept}")
-    
     next_week = len(weeks) + 1
     predicted_value = slope * next_week + intercept
-    
-    print(f"Debug - Next Week: {next_week}")
-    print(f"Debug - Predicted Value: {predicted_value}")
     
     return predicted_value
 
@@ -164,13 +155,14 @@ def format_table_for_email(df):
 if uploaded_files:
     all_data = pd.concat([process_file(file) for file in uploaded_files])
     
-    available_weeks = sorted(all_data['Week'].unique(), reverse=True)
+    # Sort weeks from oldest to newest
+    available_weeks = sorted(all_data['Week'].unique())
     available_weeks = [f'Week_{week}' for week in available_weeks]
     
     selected_weeks = st.sidebar.multiselect(
         'Select Weeks',
         available_weeks,
-        default=[available_weeks[0]]
+        default=available_weeks
     )
     
     selected_groups = st.sidebar.multiselect(
