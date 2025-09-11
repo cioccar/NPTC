@@ -8,21 +8,19 @@ st.title('NPT hours available')
 # Instructions section in sidebar
 st.sidebar.markdown('<p class="sidebar-header">Instructions</p>', unsafe_allow_html=True)
 instructions = """
-1. Check the Occupancy rate from Occupancy WBR Dashboard button
+1. Check the Occupancy rate from 'Occupancy WBR Dashboard' button
 
 2. If the Occupancy is below the target continue to 3) otherwise stop
 
 3. Click on 'Deep dive section' button
 
-4. Select the Store, SGs and Date
+4. Select the Store, SGs and Date desidered
 
-5. Download in .csv
+5. Download in .csv and drag the .csv file in the related 'Data Upload' section
 
-6. Drag the .csv file in the related section
+6. Export from the central tab the 'Available NPT hours'
 
-7. Export from the central tab the 'Available NPT hours'
-
-8. Click on Generate Email and informing OPS about the Available NPT hours for the next week divided by Staff Group
+7. Click on Generate Email and informing OPS about the Available NPT hours for the next week divided by Staff Group.
 """
 st.sidebar.markdown(instructions)
 
