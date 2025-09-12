@@ -14,15 +14,13 @@ instructions = """
 
 3. Click on 'Deep dive section' button
 
-4. Select the Store, SGs and Date
+4. Select the SGs and last 12 Weeks and download in .csv
 
-5. Download in .csv
+5. Drag the .csv file in the related section
 
-6. Drag the .csv file in the related section
+6. Export from the central tab the 'Available NPT hours'
 
-7. Export from the central tab the 'Available NPT hours'
-
-8. Click on Generate Email and informing OPS about the Available NPT hours for the next week divided by Staff Group
+7. Click on Generate Email and informing OPS about the Available NPT hours for the next week divided by Staff Group
 """
 st.sidebar.markdown(instructions)
 
